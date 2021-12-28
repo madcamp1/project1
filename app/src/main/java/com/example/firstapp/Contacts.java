@@ -3,16 +3,16 @@ package com.example.firstapp;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Contacts#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
 public class Contacts extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -28,15 +28,10 @@ public class Contacts extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Contacts.
-     */
-    // TODO: Rename and change types and number of parameters
+    private View view;
+    private RecyclerView recyclerView;
+    private ContactAdapter adapter;
+
     public static Contacts newInstance(String param1, String param2) {
         Contacts fragment = new Contacts();
         Bundle args = new Bundle();
@@ -45,7 +40,6 @@ public class Contacts extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +53,26 @@ public class Contacts extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_contacts, container, false);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
+
+        ArrayList<String> list = new ArrayList<>();
+        for (int i=0; i<20; i++) {
+            list.add(String.format("TEXT %d", i)) ;
+        }
+        adapter = new ContactAdapter(list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+
+        /*
+        view = inflater.inflate(R.layout.activity_tab, container, false);
+        recyclerView = view.findViewById(R.id.recycler_contacts);
+        Log.d("qwerty", recyclerView.toString());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));//메모
+        adapter = new ContactAdapter(list) ;
+        recyclerView.setAdapter(adapter) ;
         return inflater.inflate(R.layout.fragment_contacts, container, false);
+        */
+        return rootView;
     }
 }

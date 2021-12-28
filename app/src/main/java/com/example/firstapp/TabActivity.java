@@ -1,6 +1,7 @@
 package com.example.firstapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 public class TabActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
+
     Contacts contactFragment;
     Gallery galleryFragment;
 
