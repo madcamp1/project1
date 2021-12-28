@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_contacts"
-    tools:context=".Contacts">
+    android:layout_weight="1"
+    tools:context=".Contact">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_contacts"

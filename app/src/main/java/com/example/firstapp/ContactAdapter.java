@@ -19,17 +19,21 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         mData = dataSet;
     }
 
-    @Override
+    @NonNull //Automatically check null and throw exception
+    @Override //Overrides parent class'
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Create a new view, which defines the UI of the list item
+        // Create ViewHolder
         Context context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.itemview_contact, parent, false);
-        Holder vh = new Holder(view);
-        return vh;
+        View view = LayoutInflater.from(context).inflate(R.layout.contact_itemview, parent, false);
+
+        //Return object to onBindViewHolder
+        return new Holder(view);
     }
 
     @Override
-    public void onBindViewHolder(Holder viewHolder, int position) {
+    public void onBindViewHolder(Holder viewHolder, final int position) {
+        //Define Actions with ItemView - e.g. onClick
+        //Position: final (Should be Immutable)
         String text = mData.get(position);
         viewHolder.textView.setText(text);
     }
@@ -42,13 +46,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         public TextView textView;
 
         public Holder(View itemView) {
+            //Initialize Components in Item View
             super(itemView);
-            // Define click listener for the ViewHolder's View
             textView = (TextView) itemView.findViewById(R.id.textView);
-        }
-
-        public TextView getTextView() {
-            return textView;
         }
     }
 }

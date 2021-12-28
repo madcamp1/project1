@@ -1,21 +1,16 @@
 package com.example.firstapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
-import android.view.View;
 
-import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
-
-import java.util.ArrayList;
 
 public class TabActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
 
-    Contacts contactFragment;
+    Contact contactFragment;
     Gallery galleryFragment;
 
     @Override
@@ -23,12 +18,15 @@ public class TabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
         tabLayout = findViewById(R.id.mainTab);
-        contactFragment = new Contacts();
+        contactFragment = new Contact();
         galleryFragment = new Gallery();
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, contactFragment).commit();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+
                 switch(tab.getPosition()){
                     case 0:
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, contactFragment).commit();
@@ -36,7 +34,9 @@ public class TabActivity extends AppCompatActivity {
                     case 1:
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, galleryFragment).commit();
                         break;
+                    default: break;
                 }
+
             }
 
             @Override

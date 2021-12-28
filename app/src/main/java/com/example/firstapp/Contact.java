@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-public class Contacts extends Fragment {
+public class Contact extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,7 +24,7 @@ public class Contacts extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public Contacts() {
+    public Contact() {
         // Required empty public constructor
     }
 
@@ -32,8 +32,8 @@ public class Contacts extends Fragment {
     private RecyclerView recyclerView;
     private ContactAdapter adapter;
 
-    public static Contacts newInstance(String param1, String param2) {
-        Contacts fragment = new Contacts();
+    public static Contact newInstance(String param1, String param2) {
+        Contact fragment = new Contact();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -53,7 +53,7 @@ public class Contacts extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.fragment_contacts, container, false);
+        ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.contact_fragment, container, false);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
 
         ArrayList<String> list = new ArrayList<>();
@@ -63,16 +63,6 @@ public class Contacts extends Fragment {
         adapter = new ContactAdapter(list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
-
-        /*
-        view = inflater.inflate(R.layout.activity_tab, container, false);
-        recyclerView = view.findViewById(R.id.recycler_contacts);
-        Log.d("qwerty", recyclerView.toString());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));//메모
-        adapter = new ContactAdapter(list) ;
-        recyclerView.setAdapter(adapter) ;
-        return inflater.inflate(R.layout.fragment_contacts, container, false);
-        */
         return rootView;
     }
 }
