@@ -3,7 +3,11 @@ package com.example.firstapp;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class Gallery extends Fragment {
+
+    RecyclerView rcvGallery;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,9 +62,22 @@ public class Gallery extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_gallery, container, false);
+
+        rcvGallery = (RecyclerView)viewGroup.findViewById(R.id.recyclerView_gallery);
+        rcvGallery.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        //TODO: load Images From Local Storage
+        rcvGallery.setAdapter(new GalleryAdapter(DummyData.glData, getContext()));
+
+        return viewGroup;
     }
 }

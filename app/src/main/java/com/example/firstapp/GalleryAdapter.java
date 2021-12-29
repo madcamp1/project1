@@ -1,12 +1,14 @@
 package com.example.firstapp;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -30,7 +32,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        //TODO
+
+        final AlbumData albumData = galleryData.getAlbum(position);
+        holder.albumNameView.setText(albumData.getAlbumName());
+        holder.rcvAlbum.setLayoutManager(new GridLayoutManager(this.context, 3, GridLayoutManager.HORIZONTAL, false));
+        holder.rcvAlbum.setAdapter(new AlbumAdapter(albumData, this.context));
     }
 
     @Override
@@ -41,12 +47,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView albumNameView;
-        //TODO: RecyclerView Declare
+        RecyclerView rcvAlbum;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             albumNameView = itemView.findViewById(R.id.textView_albumName);
-            //TODO: RecyclerView binding
+            rcvAlbum = itemView.findViewById(R.id.recyclerView_album);
         }
     }
 }
