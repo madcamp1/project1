@@ -33,7 +33,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         final String imageURI = albumData.getImageURI(position);
-        holder.imgView.setImageURI(Uri.parse(imageURI));
+        holder.imgView.setImageResource(R.drawable.resource01);
         holder.imgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
