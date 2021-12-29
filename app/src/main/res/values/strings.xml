@@ -1,4 +1,5 @@
 <resources>
+    <string name="blank"></string>
     <string name="app_name">firstapp</string>
     <string name="tab_menu_1">contacts</string>
     <string name="tab_menu_2">gallery</string>
