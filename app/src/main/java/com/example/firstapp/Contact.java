@@ -77,7 +77,7 @@ public class Contact extends Fragment {
                 contactData.setPortraitSrc(cursor.getLong(0));
                 contactData.setPhoneNum(cursor.getString(1));
                 contactData.setName(cursor.getString(2));
-                contactData.setContact_id(cursor.getString(3));
+                contactData.setContact_id(cursor.getLong(3));
                 contactData.setDescription("none");
                 result.add(contactData);
             } while (cursor.moveToNext());

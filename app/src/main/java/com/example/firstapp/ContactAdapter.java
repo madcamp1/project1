@@ -1,10 +1,14 @@
 package com.example.firstapp;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +31,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         contactDatas = contactList;
     }
 
+    Context context;
+
     @NonNull //Automatically check null and throw exception
     @Override //Overrides parent class'
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Create ViewHolder
-        Context context = parent.getContext();
+        context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.contact_itemview, parent, false);
 
         //Return object to onBindViewHolder
@@ -43,9 +49,53 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         //Define Actions with ItemView - e.g. onClick
         //Position: final (Should be Immutable)
         ContactData indivContact = contactDatas.get(position);
+        viewHolder.image.setImageBitmap(getPhotoFromId(context.getContentResolver(), indivContact.getContact_id(), indivContact.getPortraitSrc()));
         viewHolder.contactName.setText(indivContact.getName());
         viewHolder.phoneNumber.setText(indivContact.getPhoneNum());
         viewHolder.description.setText(indivContact.getDescription());
+    }
+
+    public Bitmap getPhotoFromId(ContentResolver contentResolver, long id, long photo_id) {
+        byte[] photoBytes = null;
+        Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, photo_id);
+        Cursor cursor = contentResolver.query(photoUri, new String[]{ContactsContract.CommonDataKinds.Photo.PHOTO}, null, null, null);
+        try {
+            if (cursor.moveToFirst()) photoBytes = cursor.getBlob(0);
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+
+        if (photoBytes != null) {
+            return resizingBitmap(BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length));
+        } else {
+            Log.d("DEBUG", "there's no photoBytes. Return null");
+        }
+        return null;
+    }
+
+    public Bitmap resizingBitmap(Bitmap originalBitmap){
+        if (originalBitmap == null){
+            return null;
+        }
+
+        float width = originalBitmap.getWidth();
+        float height = originalBitmap.getHeight();
+        float resizing_size = 120;
+
+        Bitmap resizedBitmap = null;
+        if (width > resizing_size) {
+            float fScale = (float)(width/((float)(width / 100)));
+            width *= fScale/100;
+            height *= fScale/100;
+        } else {
+            float fScale = (float)(resizing_size/(float)(height / 100));
+            width *= fScale/100;
+            height *= fScale/100;
+        }
+        resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, (int)width, (int)height, true);
+        return resizedBitmap;
     }
 
     public int getItemCount() {

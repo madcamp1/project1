@@ -7,10 +7,10 @@ import android.provider.ContactsContract;
 import java.util.ArrayList;
 
 public class ContactData {
-    private long portraitSrc;
-    private String name, phoneNum, description, contact_id;
+    private long portraitSrc, contact_id;
+    private String name, phoneNum, description;
     public ContactData(){};
-    public ContactData(long portraitSrc, String name, String phoneNum, String description, String contact_id) {
+    public ContactData(long portraitSrc, String name, String phoneNum, String description, long contact_id) {
         this.portraitSrc = portraitSrc;
         this.name = name;
         this.phoneNum = phoneNum;
@@ -50,11 +50,11 @@ public class ContactData {
         this.description = description;
     }
 
-    public String getContact_id() {
+    public long getContact_id() {
         return contact_id;
     }
 
-    public void setContact_id(String contact_id) {
+    public void setContact_id(long contact_id) {
         this.contact_id = contact_id;
     }
 }
