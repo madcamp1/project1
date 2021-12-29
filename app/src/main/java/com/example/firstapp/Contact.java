@@ -1,6 +1,12 @@
 package com.example.firstapp;
 
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+
+import android.provider.ContactsContract;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,19 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 public class Contact extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public Contact() {
         // Required empty public constructor
@@ -32,21 +32,15 @@ public class Contact extends Fragment {
     private RecyclerView recyclerView;
     private ContactAdapter adapter;
 
-    public static Contact newInstance(String param1, String param2) {
+    public static Contact newInstance() {
         Contact fragment = new Contact();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -56,13 +50,39 @@ public class Contact extends Fragment {
         ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.contact_fragment, container, false);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
 
-        ArrayList<String> list = new ArrayList<>();
-        for (int i=0; i<20; i++) {
-            list.add(String.format("TEXT %d", i)) ;
-        }
+        ArrayList<ContactData> list = getContactData();
+
         adapter = new ContactAdapter(list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
         return rootView;
     }
+
+    public ArrayList<ContactData> getContactData() {
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        String[] qr = new String[]{
+                ContactsContract.Contacts.PHOTO_ID,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+        };
+
+        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;
+        Cursor cursor = getContext().getContentResolver().query(uri, qr, null, null, sortOrder);
+        //LinkedHashSet<ContactData> hashList = new LinkedHashSet<>();
+        ArrayList<ContactData> result = new ArrayList<ContactData>();
+        if (cursor.moveToFirst()) {
+            do {
+                ContactData contactData = new ContactData();
+                contactData.setPortraitSrc(cursor.getLong(0));
+                contactData.setPhoneNum(cursor.getString(1));
+                contactData.setName(cursor.getString(2));
+                contactData.setContact_id(cursor.getString(3));
+                contactData.setDescription("none");
+                result.add(contactData);
+            } while (cursor.moveToNext());
+        }
+        return result;
+    }
+
 }
