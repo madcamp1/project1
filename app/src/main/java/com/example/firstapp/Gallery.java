@@ -70,7 +70,7 @@ public class Gallery extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_gallery, container, false);
+        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.gallery_fragment, container, false);
 
         rcvGallery = (RecyclerView)viewGroup.findViewById(R.id.recyclerView_gallery);
         rcvGallery.setLayoutManager(new LinearLayoutManager(getContext()));
