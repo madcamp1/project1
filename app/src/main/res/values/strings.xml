@@ -9,6 +9,10 @@
     <string name="gallery_fragment">Hello Gallery!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="portrait">프로필 사진</string>
+    <string name="call">전화 걸기</string>
+    <string name="message">메시지 보내기</string>
+    <string name="add">새 연락처 추가</string>
 
 
 </resources>

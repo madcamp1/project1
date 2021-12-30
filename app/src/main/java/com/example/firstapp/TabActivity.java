@@ -1,7 +1,9 @@
 package com.example.firstapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
@@ -51,4 +53,5 @@ public class TabActivity extends AppCompatActivity {
         });
 
     }
+
 }
