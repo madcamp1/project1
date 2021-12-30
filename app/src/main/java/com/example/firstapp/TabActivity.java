@@ -14,6 +14,7 @@ public class TabActivity extends AppCompatActivity {
 
     Contact contactFragment;
     Gallery galleryFragment;
+    Map mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +23,7 @@ public class TabActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.mainTab);
         contactFragment = new Contact();
         galleryFragment = new Gallery();
+        mapFragment = new Map();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, contactFragment).commit();
 
@@ -36,6 +38,8 @@ public class TabActivity extends AppCompatActivity {
                     case 1:
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, galleryFragment).commit();
                         break;
+                    case 2:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, mapFragment).commit();
                     default: break;
                 }
 

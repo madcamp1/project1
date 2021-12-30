@@ -13,7 +13,9 @@
         <entry key="app/src/main/res/layout/fragment_gallery.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/fragment_tab_frame.xml" value="0.21458333333333332" />
         <entry key="app/src/main/res/layout/gallery_fragment.xml" value="0.4623906074057954" />
+        <entry key="app/src/main/res/layout/gallery_item.xml" value="0.22552083333333334" />
         <entry key="app/src/main/res/layout/itemview_conact.xml" value="0.23020833333333332" />
+        <entry key="app/src/main/res/layout/map_fragment.xml" value="0.22552083333333334" />
         <entry key="app/src/main/res/layout/tab_view.xml" value="0.4000757972155082" />
       </map>
     </option>

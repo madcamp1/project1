@@ -5,28 +5,37 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.android.material.tabs.TabLayout;
+import com.kakao.util.maps.helper.Utility;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity {
 
     public Button mainButton;
 
     private Permissions permissionManager;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        Log.d("APPKEY", getKeyHashBase64(this));
         //Activity는 자체 출력 기능이 없기 때문에 setContentView로 Activity안에 뷰를 배치해야 한다.
         setContentView(R.layout.activity_main);
         mainButton = findViewById(R.id.mainbutton);
@@ -70,4 +79,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+//    public String getKeyHashBase64(Context context) {
+//        PackageInfo packageInfo = Utility.getPackageInfo(context, PackageManager.GET_SIGNATURES);
+//        if (packageInfo == null) return null;
+//        for (Signature signature : packageInfo.signatures) {
+//            try {
+//                MessageDigest md = MessageDigest.getInstance("SHA");
+//                md.update(signature.toByteArray());
+//                return Base64.encodeToString(md.digest(), Base64.DEFAULT);
+//            } catch (NoSuchAlgorithmException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return null;
+//    }
+
 }
