@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
 
@@ -35,7 +37,13 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
         final AlbumData albumData = galleryData.getAlbum(position);
         holder.albumNameView.setText(albumData.getAlbumName());
-        holder.rcvAlbum.setLayoutManager(new GridLayoutManager(this.context, 3, GridLayoutManager.HORIZONTAL, false));
+
+        int spanCount = 0;
+        if(albumData.getSize() <= 4) spanCount = 1;
+        else if(albumData.getSize() <= 8) spanCount = 2;
+        else spanCount = 3;
+
+        holder.rcvAlbum.setLayoutManager(new GridLayoutManager(this.context, spanCount, GridLayoutManager.HORIZONTAL, false));
         holder.rcvAlbum.setAdapter(new AlbumAdapter(albumData, this.context));
     }
 

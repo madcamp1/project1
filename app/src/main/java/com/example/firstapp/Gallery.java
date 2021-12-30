@@ -1,5 +1,8 @@
 package com.example.firstapp;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,10 +10,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,8 +83,39 @@ public class Gallery extends Fragment {
         rcvGallery.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //TODO: load Images From Local Storage
-        rcvGallery.setAdapter(new GalleryAdapter(DummyData.glData, getContext()));
+
+        GalleryData glData = parsePhotosToGD(getGalleryPhotos(getContext()));
+        rcvGallery.setAdapter(new GalleryAdapter(glData, getContext()));
 
         return viewGroup;
+    }
+
+    public ArrayList<String> getGalleryPhotos(Context context) {
+        ArrayList<String> photos = new ArrayList<String>();
+        String[] colums = new String[] {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String orderBy = MediaStore.Images.Media._ID;
+        Cursor cursor = context.getContentResolver().query(uri, colums, null, null, orderBy);
+
+        if (cursor != null && cursor.getCount() > 0){
+            while (cursor.moveToNext()) {
+                int indexPath = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+                photos.add(cursor.getString(indexPath));
+            }
+        } else {
+            Log.e("getGalleryPhotos", "error getting URIs");
+        }
+        Collections.reverse(photos);
+        return photos;
+    }
+
+    public GalleryData parsePhotosToGD(ArrayList<String> photos) {
+        GalleryData galleryData = new GalleryData();
+
+        for (int i = 0; i < photos.size(); i++) {
+            galleryData.addImageURI(photos.get(i));
+        }
+
+        return galleryData;
     }
 }

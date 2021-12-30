@@ -44,23 +44,12 @@ public class DummyData {
             addImageURI("app/src/main/res/imgs/resource01.png");
             addImageURI("app/src/main/res/imgs/resource01.png");
             addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
-            addImageURI("app/src/main/res/imgs/resource01.png");
+        }
+    };
+    static AlbumData album3 = new AlbumData() {
+        {
+
+            setAlbumName("album3");
             addImageURI("app/src/main/res/imgs/resource01.png");
             addImageURI("app/src/main/res/imgs/resource01.png");
         }
@@ -68,6 +57,7 @@ public class DummyData {
     static GalleryData glData = new GalleryData() {
         {
             addAlbum(album1);
+            addAlbum(album3);
             addAlbum(album2);
         }
     };
