@@ -23,7 +23,6 @@ public class Permissions {
     private String[] permissions = {
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.WRITE_CONTACTS,
-            Manifest.permission.MANAGE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
@@ -42,6 +41,7 @@ public class Permissions {
             result = ContextCompat.checkSelfPermission(context, p);
             if (result != PackageManager.PERMISSION_GRANTED){
                 permissionList.add(p);
+                Log.e("Permission!", permissionList.toString());
             }
         }
         return permissionList.isEmpty();

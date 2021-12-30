@@ -3,16 +3,12 @@ package com.example.firstapp;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.Manifest;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -40,8 +36,7 @@ public class MainActivity extends AppCompatActivity {
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (!permissionManager.checkPermission()) {
-                if(false) {
+                if (!permissionManager.checkPermission()) {
                     new AlertDialog.Builder(MainActivity.this)
                             .setMessage("해당 어플리케이션은 연락처와 저장공간에 대한 권한을 필요로 합니다.\n어플리케이션 정보 - 앱 권한에서 연락처와 저장공간에 대한 엑세스 권한을 허용해 주세요")
                             .setPositiveButton("허용하기", new DialogInterface.OnClickListener() {

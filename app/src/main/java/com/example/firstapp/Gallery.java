@@ -2,6 +2,7 @@ package com.example.firstapp;
 
 import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 
+import android.app.Activity;
 import android.app.RecoverableSecurityException;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -43,7 +44,6 @@ import java.util.Collections;
 public class Gallery extends Fragment {
 
     RecyclerView rcvGallery;
-    Uri imgUriToDel;
     ContentResolver contentResolver;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -86,10 +86,6 @@ public class Gallery extends Fragment {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,8 +101,6 @@ public class Gallery extends Fragment {
         GalleryData glData = parsePhotosToGD(getGalleryPhotos(getContext()));
         rcvGallery.setAdapter(new GalleryAdapter(glData, getContext()));
 
-
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver, new IntentFilter("delete-img"));
 
         return viewGroup;
     }
@@ -147,56 +141,6 @@ public class Gallery extends Fragment {
         return galleryData;
     }
 
-    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            imgUriToDel = (Uri) intent.getExtras().get("imgUri");
 
-            try {
-                int imageFd = context.getContentResolver()
-                        .delete(imgUriToDel,null,null);
-                Log.d("imageFd", imageFd + "");
-                Log.d("imgUri", imgUriToDel.toString());
-            } catch (SecurityException securityException) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    RecoverableSecurityException recoverableSecurityException;
-                    if (securityException instanceof RecoverableSecurityException) {
-                        recoverableSecurityException =
-                                (RecoverableSecurityException)securityException;
-                    } else {
-                        throw new RuntimeException(
-                                securityException.getMessage(), securityException);
-                    }
-                    IntentSender intentSender =recoverableSecurityException.getUserAction()
-                            .getActionIntent().getIntentSender();
-                    try {
-                        startIntentSenderForResult(intentSender, 0x1033,
-                                null, 0, 0, 0, null);
-                    } catch (IntentSender.SendIntentException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    throw new RuntimeException(
-                            securityException.getMessage(), securityException);
-                }
-            }
-        }
-    };
 
-//    private void removeMediaFile(Context context, Uri uri) {
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            try {
-//                context.getContentResolver().delete(uri, null, null);
-//            } catch (RecoverableSecurityException e) {
-//                IntentSender intentSender = e.getUserAction().getActionIntent().getIntentSender();
-//                ActivityCompat.requestPermissions(this.getActivity(), intentSender,);
-//            }
-//        }else {
-//            try {
-//                context.getContentResolver().delete(uri, null, null);
-//            } catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 }

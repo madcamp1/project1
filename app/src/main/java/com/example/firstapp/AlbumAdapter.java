@@ -64,8 +64,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
                         .setPositiveButton("예", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                albumData.deleteURI(positionOfHolder);
-                                notifyItemRemoved(positionOfHolder);
 
                                 Uri uri = Uri.parse(imageURI);
                                 Log.d("URIisThis",imageURI);
@@ -73,6 +71,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
                                 Intent intent = new Intent("delete-img");
                                 intent.putExtra("imgUri",uri);
+                                intent.putExtra("imgPosition",positionOfHolder);
+                                intent.putExtra("albumName",albumData.getAlbumName());
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                             }
                         })

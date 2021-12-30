@@ -19,6 +19,13 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     private GalleryData galleryData;
     private Context context;
 
+    public AlbumData getAlbum(String albumName) {
+        for(int i = 0; i < galleryData.getSize(); i++) {
+            if (galleryData.getAlbum(i).getAlbumName().equals(albumName)) return galleryData.getAlbum(i);
+        }
+        return null;
+    }
+
     public GalleryAdapter(GalleryData galleryData, Context context) {
         this.galleryData = galleryData;
         this.context = context;
@@ -39,8 +46,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         holder.albumNameView.setText(albumData.getAlbumName());
 
         int spanCount = 0;
-        if(albumData.getSize() <= 4) spanCount = 1;
-        else if(albumData.getSize() <= 8) spanCount = 2;
+        if(albumData.getSize() <= 7) spanCount = 1;
+        else if(albumData.getSize() <= 11) spanCount = 2;
         else spanCount = 3;
 
         holder.rcvAlbum.setLayoutManager(new GridLayoutManager(this.context, spanCount, GridLayoutManager.HORIZONTAL, false));
