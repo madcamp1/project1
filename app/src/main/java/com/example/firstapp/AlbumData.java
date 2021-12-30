@@ -31,6 +31,10 @@ public class AlbumData implements Comparable<AlbumData> {
         return this.imageURIs.size();
     }
 
+    public void deleteURI(int index) {
+        this.imageURIs.remove(index);
+    }
+
     @Override
     public int compareTo(AlbumData albumData) {
         return this.getAlbumName().compareTo(albumData.getAlbumName());

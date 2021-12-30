@@ -1,8 +1,21 @@
 package com.example.firstapp;
 
+import androidx.activity.result.IntentSenderRequest;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.app.Activity;
+import android.app.RecoverableSecurityException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -51,4 +64,6 @@ public class TabActivity extends AppCompatActivity {
         });
 
     }
+
+
 }

@@ -1,11 +1,20 @@
 package com.example.firstapp;
 
+import android.app.RecoverableSecurityException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -27,6 +37,7 @@ import java.util.Collections;
 public class Gallery extends Fragment {
 
     RecyclerView rcvGallery;
+    String imgUriToDel;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,6 +98,9 @@ public class Gallery extends Fragment {
         GalleryData glData = parsePhotosToGD(getGalleryPhotos(getContext()));
         rcvGallery.setAdapter(new GalleryAdapter(glData, getContext()));
 
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver, new IntentFilter("delete-img"));
+
         return viewGroup;
     }
 
@@ -118,4 +132,36 @@ public class Gallery extends Fragment {
 
         return galleryData;
     }
+
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            imgUriToDel = intent.getStringExtra("imgUri");
+            File f = new File(imgUriToDel);
+            f.delete();
+//            try {
+                Log.d("imgUriDel",imgUriToDel.toString());
+//                removeMediaFile(context, imgUriToDel);
+//            } catch (IntentSender.SendIntentException e) {
+//                e.printStackTrace();
+//            }
+        }
+    };
+
+//    private void removeMediaFile(Context context, Uri uri) {
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            try {
+//                context.getContentResolver().delete(uri, null, null);
+//            } catch (RecoverableSecurityException e) {
+//                IntentSender intentSender = e.getUserAction().getActionIntent().getIntentSender();
+//                ActivityCompat.requestPermissions(this.getActivity(), intentSender,);
+//            }
+//        }else {
+//            try {
+//                context.getContentResolver().delete(uri, null, null);
+//            } catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }
