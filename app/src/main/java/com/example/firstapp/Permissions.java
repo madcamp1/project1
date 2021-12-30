@@ -23,8 +23,9 @@ public class Permissions {
     private String[] permissions = {
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.MANAGE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
     };
 
     private List permissionList;

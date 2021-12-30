@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!permissionManager.checkPermission()) {
+//                if (!permissionManager.checkPermission()) {
+                if(false) {
                     new AlertDialog.Builder(MainActivity.this)
                             .setMessage("해당 어플리케이션은 연락처와 저장공간에 대한 권한을 필요로 합니다.\n어플리케이션 정보 - 앱 권한에서 연락처와 저장공간에 대한 엑세스 권한을 허용해 주세요")
                             .setPositiveButton("허용하기", new DialogInterface.OnClickListener() {

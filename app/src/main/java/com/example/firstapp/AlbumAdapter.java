@@ -1,6 +1,7 @@
 package com.example.firstapp;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -65,21 +66,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 albumData.deleteURI(positionOfHolder);
                                 notifyItemRemoved(positionOfHolder);
-//
-//                                Uri fileUri = Uri.parse(imageURI);
-//                                String filePath = fileUri.getPath();
-//
-//                                Cursor c = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, "_data='" + filePath + "'", null, null);
-//                                c.moveToNext();
-//                                int id = c.getInt(0);
-//                                Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-//                                Uri uri = Uri.parse(imageURI);
-                                Log.e("URIisThis",imageURI);
+                                Uri uri = Uri.parse(imageURI);
+                                Log.d("URIisThis",imageURI);
 
 
                                 Intent intent = new Intent("delete-img");
-                                intent.putExtra("imgUri","file:/"+imageURI);
+                                intent.putExtra("imgUri",uri);
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                             }
                         })

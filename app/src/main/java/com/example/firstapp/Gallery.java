@@ -1,7 +1,11 @@
 package com.example.firstapp;
 
+import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
+
 import android.app.RecoverableSecurityException;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,6 +23,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -37,7 +43,8 @@ import java.util.Collections;
 public class Gallery extends Fragment {
 
     RecyclerView rcvGallery;
-    String imgUriToDel;
+    Uri imgUriToDel;
+    ContentResolver contentResolver;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -106,15 +113,22 @@ public class Gallery extends Fragment {
 
     public ArrayList<String> getGalleryPhotos(Context context) {
         ArrayList<String> photos = new ArrayList<String>();
-        String[] colums = new String[] {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
+        String[] colums = new String[] {MediaStore.Images.Media._ID};
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String orderBy = MediaStore.Images.Media._ID;
-        Cursor cursor = context.getContentResolver().query(uri, colums, null, null, orderBy);
+        contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(uri, colums, null, null, orderBy);
+
+        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
 
         if (cursor != null && cursor.getCount() > 0){
             while (cursor.moveToNext()) {
-                int indexPath = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
-                photos.add(cursor.getString(indexPath));
+
+                long id = cursor.getLong(idColumn);
+
+                Uri contentUri = ContentUris.withAppendedId(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                photos.add(contentUri.toString());
             }
         } else {
             Log.e("getGalleryPhotos", "error getting URIs");
@@ -136,15 +150,36 @@ public class Gallery extends Fragment {
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            imgUriToDel = intent.getStringExtra("imgUri");
-            File f = new File(imgUriToDel);
-            f.delete();
-//            try {
-                Log.d("imgUriDel",imgUriToDel.toString());
-//                removeMediaFile(context, imgUriToDel);
-//            } catch (IntentSender.SendIntentException e) {
-//                e.printStackTrace();
-//            }
+            imgUriToDel = (Uri) intent.getExtras().get("imgUri");
+
+            try {
+                int imageFd = context.getContentResolver()
+                        .delete(imgUriToDel,null,null);
+                Log.d("imageFd", imageFd + "");
+                Log.d("imgUri", imgUriToDel.toString());
+            } catch (SecurityException securityException) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    RecoverableSecurityException recoverableSecurityException;
+                    if (securityException instanceof RecoverableSecurityException) {
+                        recoverableSecurityException =
+                                (RecoverableSecurityException)securityException;
+                    } else {
+                        throw new RuntimeException(
+                                securityException.getMessage(), securityException);
+                    }
+                    IntentSender intentSender =recoverableSecurityException.getUserAction()
+                            .getActionIntent().getIntentSender();
+                    try {
+                        startIntentSenderForResult(intentSender, 0x1033,
+                                null, 0, 0, 0, null);
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    throw new RuntimeException(
+                            securityException.getMessage(), securityException);
+                }
+            }
         }
     };
 

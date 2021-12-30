@@ -8,6 +8,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.app.Activity;
 import android.app.RecoverableSecurityException;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -33,6 +34,7 @@ public class TabActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.mainTab);
         contactFragment = new Contact();
         galleryFragment = new Gallery();
+
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, contactFragment).commit();
 
@@ -64,6 +66,7 @@ public class TabActivity extends AppCompatActivity {
         });
 
     }
+
 
 
 }
