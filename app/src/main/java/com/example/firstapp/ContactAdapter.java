@@ -14,8 +14,11 @@ import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Contacts;
 import android.provider.ContactsContract;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,24 +35,45 @@ import org.w3c.dom.Text;
 import java.io.InputStream;
 import java.nio.channels.InterruptedByTimeoutException;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> {
 
     private ArrayList<ContactData> contactDatas;
 
-    public ContactAdapter(ArrayList<ContactData> contactList) {
-        contactDatas = contactList;
-    }
 
     private final String[] putOrDeleteMenu = {"연락처 수정하기", "연락처 삭제하기"};
 
     Context context;
 
+
+    public ContactAdapter(Context context, String retrieve) {
+        contactDatas = new ArrayList<ContactData>();
+        this.context = context;
+        Handler hd = new Handler(){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                contactDatas = (ArrayList<ContactData>) msg.obj;
+                notifyDataSetChanged();
+            }
+        };
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                contactDatas = getContactData(retrieve);
+                Message msg = hd.obtainMessage(1, contactDatas);
+                hd.sendMessage(msg);
+            }
+        }.start();
+    }
+
     @NonNull //Automatically check null and throw exception
     @Override //Overrides parent class'
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Create ViewHolder
-        context = parent.getContext();
+//        context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.contact_itemview, parent, false);
         //Return object to onBindViewHolder
         return new Holder(view);
@@ -182,5 +206,60 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         Uri uri = ContactsContract.RawContacts.CONTENT_URI;
         String selectionCause = ContactsContract.RawContacts.CONTACT_ID + "=" + Long.toString(toRemove.getContact_id());
         return context.getContentResolver().delete(uri, selectionCause, null);
+    }
+
+    public ArrayList<ContactData> getContactData(String input) {
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI; //android provider에서 제공하는 데이터 식별자
+        //ContactsContract.Contacts - Constants for the Contact table
+        // == 동일한 사람을 나타내는 연락처 집계당 하나의 레코드가 되는 연락처 테이
+        //ContactsContract.CommonDataKinds = ContactsContract.Data 테이블의 common data type 을 정
+        String[] qr = new String[]{
+                ContactsContract.Contacts.PHOTO_ID,
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID //??
+        };
+        if (context == null) {
+            Log.d("DEBUG", "No context");
+            return null;
+        }
+        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;
+        ArrayList<ContactData> result;
+        String where = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + input + "%'" + " OR " + ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE '%" + input + "%'";
+        if (input.matches("[+-]?\\d*(\\.\\d+)?")) {
+            where += handleAdditionalQuery(input);
+        }
+        try (Cursor cursor = context.getContentResolver().query(uri, qr, where, null, sortOrder)) {
+            //SELECT qr FROM ContactsContract.CommonDataKinds.Phone DESC/ASC ~~ 같은 느낌이라 보면 될 듯
+            result = new ArrayList<ContactData>();
+            if (cursor.moveToFirst()) {
+                do {
+                    ContactData contactData = new ContactData();
+                    contactData.setPortraitSrc(cursor.getLong(0));
+                    contactData.setPhoneNum(cursor.getString(1));
+                    contactData.setName(cursor.getString(2));
+                    contactData.setContact_id(cursor.getLong(3));
+                    contactData.setDescription("");
+                    result.add(contactData);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = null;
+        }
+        return result;
+    }
+
+    public String handleAdditionalQuery(String targetNum) {
+        int len = targetNum.length();
+        String additionalQuery="";
+        if (len <= 3) return additionalQuery;
+        else if (len <= 7) {
+            additionalQuery = targetNum.substring(0, 3) + "-" + targetNum.substring(3, len);
+        }
+        else {
+            additionalQuery = targetNum.substring(0, 3) + "-" + targetNum.substring(3, 7) + "-" + targetNum.substring(7, len);
+        }
+        return " OR " + ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + additionalQuery + "%'";
     }
 }

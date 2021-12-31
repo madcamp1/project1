@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     //intent - 앱 컴포넌트가 무엇을 할 지 담는 메시지 객체
                     //intent 생성자에 넣을 sub activity 는 manifest에 명시되어 있어야 한다.
                     //getApplicationContext는 액티비티에서 호출되며, singleton instance이다.
-                    Intent intent = new Intent(getApplicationContext(), TabActivity.class);
+                    Intent intent = new Intent(MainActivity.this, TabActivity.class);
                     startActivity(intent);
                 }
             }
