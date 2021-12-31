@@ -21,6 +21,7 @@ import android.util.Log;
 
 import com.google.android.material.tabs.TabLayout;
 
+
 public class TabActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
