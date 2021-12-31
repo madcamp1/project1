@@ -1,16 +1,40 @@
 package com.example.firstapp;
 
+import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
+
+import android.app.Activity;
+import android.app.RecoverableSecurityException;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,6 +44,7 @@ import android.view.ViewGroup;
 public class Gallery extends Fragment {
 
     RecyclerView rcvGallery;
+    ContentResolver contentResolver;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,10 +86,6 @@ public class Gallery extends Fragment {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,8 +97,50 @@ public class Gallery extends Fragment {
         rcvGallery.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //TODO: load Images From Local Storage
-        rcvGallery.setAdapter(new GalleryAdapter(DummyData.glData, getContext()));
+
+        GalleryData glData = parsePhotosToGD(getGalleryPhotos(getContext()));
+        rcvGallery.setAdapter(new GalleryAdapter(glData, getContext()));
+
 
         return viewGroup;
     }
+
+    public ArrayList<String> getGalleryPhotos(Context context) {
+        ArrayList<String> photos = new ArrayList<String>();
+        String[] colums = new String[] {MediaStore.Images.Media._ID};
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String orderBy = MediaStore.Images.Media._ID;
+        contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(uri, colums, null, null, orderBy);
+
+        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+
+        if (cursor != null && cursor.getCount() > 0){
+            while (cursor.moveToNext()) {
+
+                long id = cursor.getLong(idColumn);
+
+                Uri contentUri = ContentUris.withAppendedId(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                photos.add(contentUri.toString());
+            }
+        } else {
+            Log.e("getGalleryPhotos", "error getting URIs");
+        }
+        Collections.reverse(photos);
+        return photos;
+    }
+
+    public GalleryData parsePhotosToGD(ArrayList<String> photos) {
+        GalleryData galleryData = new GalleryData();
+
+        for (int i = 0; i < photos.size(); i++) {
+            galleryData.addImageURI(photos.get(i));
+        }
+
+        return galleryData;
+    }
+
+
+
 }
