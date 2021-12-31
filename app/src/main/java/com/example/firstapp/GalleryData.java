@@ -1,5 +1,7 @@
 package com.example.firstapp;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -32,26 +34,22 @@ public class GalleryData {
         return this.albums.size();
     }
 
-    public int addImageURI(String imgURI) {
+    public int addImageURI(String albumName, Uri uri) {
+
+
         int index = this.albums.size() - 1;
-        String[] splitURIs = imgURI.split("/");
         for (;index >= 0; index--) {
-            if(this.albums.get(index).getAlbumName().equals(splitURIs[splitURIs.length - 2])) break;
+            if(this.albums.get(index).getAlbumName().equals(albumName)) break;
         }
         if (index < 0) {
             //새로운 앨범 추가 코드
             AlbumData newAlbum = new AlbumData();
-            newAlbum.setAlbumName(splitURIs[splitURIs.length - 2]);
-            String albumLocation = "";
-            for (int i = 0; i < splitURIs.length - 1; i++) {
-                albumLocation += splitURIs[i];
-            }
-            newAlbum.setAlbumLocation(albumLocation);
-            newAlbum.addImageURI(imgURI);
+            newAlbum.setAlbumName(albumName);
+            newAlbum.addImageURI(uri.toString());
             this.addAlbum(newAlbum);
             return 0;
         } else {
-            this.albums.get(index).addImageURI(imgURI);
+            this.albums.get(index).addImageURI(uri.toString());
             return 1;
         }
     }

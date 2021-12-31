@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -44,7 +45,6 @@ import java.util.Collections;
 public class Gallery extends Fragment {
 
     RecyclerView rcvGallery;
-    ContentResolver contentResolver;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -86,61 +86,20 @@ public class Gallery extends Fragment {
         }
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.gallery_fragment, container, false);
 
-        rcvGallery = (RecyclerView)viewGroup.findViewById(R.id.recyclerView_gallery);
+        rcvGallery = (RecyclerView) viewGroup.findViewById(R.id.recyclerView_gallery);
         rcvGallery.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        //TODO: load Images From Local Storage
-
-        GalleryData glData = parsePhotosToGD(getGalleryPhotos(getContext()));
-        rcvGallery.setAdapter(new GalleryAdapter(glData, getContext()));
-
-
         return viewGroup;
     }
 
-    public ArrayList<String> getGalleryPhotos(Context context) {
-        ArrayList<String> photos = new ArrayList<String>();
-        String[] colums = new String[] {MediaStore.Images.Media._ID};
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String orderBy = MediaStore.Images.Media._ID;
-        contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(uri, colums, null, null, orderBy);
-
-        int idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-
-        if (cursor != null && cursor.getCount() > 0){
-            while (cursor.moveToNext()) {
-
-                long id = cursor.getLong(idColumn);
-
-                Uri contentUri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-                photos.add(contentUri.toString());
-            }
-        } else {
-            Log.e("getGalleryPhotos", "error getting URIs");
-        }
-        Collections.reverse(photos);
-        return photos;
+    @Override
+    public void onResume() {
+        super.onResume();
+        rcvGallery.setAdapter(new GalleryAdapter(getContext()));
     }
-
-    public GalleryData parsePhotosToGD(ArrayList<String> photos) {
-        GalleryData galleryData = new GalleryData();
-
-        for (int i = 0; i < photos.size(); i++) {
-            galleryData.addImageURI(photos.get(i));
-        }
-
-        return galleryData;
-    }
-
-
-
 }
