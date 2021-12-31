@@ -105,8 +105,8 @@ public class Gallery extends Fragment {
         return viewGroup;
     }
 
-    public ArrayList<String> getGalleryPhotos(Context context) {
-        ArrayList<String> photos = new ArrayList<String>();
+    public ArrayList<Uri> getGalleryPhotos(Context context) {
+        ArrayList<Uri> photos = new ArrayList<Uri>();
         String[] colums = new String[] {MediaStore.Images.Media._ID};
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String orderBy = MediaStore.Images.Media._ID;
@@ -122,7 +122,7 @@ public class Gallery extends Fragment {
 
                 Uri contentUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-                photos.add(contentUri.toString());
+                photos.add(contentUri);
             }
         } else {
             Log.e("getGalleryPhotos", "error getting URIs");
@@ -131,11 +131,16 @@ public class Gallery extends Fragment {
         return photos;
     }
 
-    public GalleryData parsePhotosToGD(ArrayList<String> photos) {
+    public GalleryData parsePhotosToGD(ArrayList<Uri> photos) {
         GalleryData galleryData = new GalleryData();
+        Cursor cursor;
 
         for (int i = 0; i < photos.size(); i++) {
-            galleryData.addImageURI(photos.get(i));
+            cursor = getContext().getContentResolver().query(photos.get(i), null, null, null, null);
+            cursor.moveToNext();
+            String path = cursor.getString(cursor.getColumnIndexOrThrow("_data"));
+            String[] splitUris = path.split("/");
+            galleryData.addImageURI(splitUris[splitUris.length - 2], photos.get(i));
         }
 
         return galleryData;
