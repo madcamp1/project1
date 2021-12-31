@@ -7,10 +7,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.IOException;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
     private AlbumData albumData;
@@ -47,13 +50,26 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
         final String imageURI = albumData.getImageURI(position);
         final int positionOfHolder = position;
-        Glide.with(context).load(imageURI).into(holder.imgView);
+
+        Bitmap thumbnail = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            try {
+                thumbnail = context.getContentResolver().loadThumbnail(Uri.parse(imageURI), new Size(240, 240), null);
+                Glide.with(context).load(thumbnail).into(holder.imgView);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Glide.with(context).load(imageURI).into(holder.imgView);
+        }
+
         holder.imgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setMessage("hello").show();
-                //TODO: FullScreen Image Viewer
+                Intent intent = new Intent(Intent.ACTION_EDIT);
+                intent.setDataAndType(Uri.parse(imageURI), "image/*");
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                context.startActivity(Intent.createChooser(intent, "Edit Image"));
             }
         });
         holder.imgView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -68,11 +84,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
                                 Uri uri = Uri.parse(imageURI);
                                 Log.d("URIisThis",imageURI);
 
-
                                 Intent intent = new Intent("delete-img");
                                 intent.putExtra("imgUri",uri);
                                 intent.putExtra("imgPosition",positionOfHolder);
                                 intent.putExtra("albumName",albumData.getAlbumName());
+                                //TabActivity에서 Broadcast Receive
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                             }
                         })
