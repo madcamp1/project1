@@ -68,10 +68,10 @@ public class Map extends Fragment implements OnMapReadyCallback {
     private double latitude = 0;
     private double longitude = 0;
 
-
+    ArrayList<Marker> currentMarkers = new ArrayList<Marker>();
 
     private FusedLocationSource fusedLocationSource;
-    private static MapSearchAdapter mapSearchAdapter;
+    private MapSearchAdapter mapSearchAdapter;
     private Geocoder geocoder;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
 
@@ -118,9 +118,9 @@ public class Map extends Fragment implements OnMapReadyCallback {
         naverMap.setOnMapClickListener(new NaverMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull PointF pointF, @NonNull LatLng latLng) {
-                Marker marker = new Marker();
-                marker.setPosition(latLng);
-                marker.setMap(naverMap);
+//                Marker marker = new Marker();
+//                marker.setPosition(latLng);
+//                marker.setMap(naverMap);
             }
         });
         naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
@@ -153,7 +153,7 @@ public class Map extends Fragment implements OnMapReadyCallback {
 
 
 
-    private static class SearchTask extends AsyncTask<String, Void, ArrayList<SearchResult>> {
+    private class SearchTask extends AsyncTask<String, Void, ArrayList<SearchResult>> {
         String baseURL = "https://openapi.naver.com/v1/search/local.json";
         URL searchURL;
         String query;
@@ -229,7 +229,25 @@ public class Map extends Fragment implements OnMapReadyCallback {
         @Override
         protected void onPostExecute(ArrayList<SearchResult> searchResults) {
             super.onPostExecute(searchResults);
-            Log.d("CHECK", Integer.toString(searchResults.size()));
+
+            if (currentMarkers != null || currentMarkers.size() != 0){
+                for (int i = 0; i < currentMarkers.size(); i++){
+                    currentMarkers.get(i).setMap(null);
+                }
+                currentMarkers.clear();
+            }
+
+            for (int i = 0; i < searchResults.size(); i++){
+                Marker marker = new Marker();
+                GeoTransPoint oKA = new GeoTransPoint(searchResults.get(i).getMapx(), searchResults.get(i).getMapy());
+                GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+                Double lat = oGeo.getY();
+                Double lng = oGeo.getX();
+                marker.setPosition(new LatLng(lat, lng));
+                marker.setMap(currentNaverMap);
+                currentMarkers.add(marker);
+            }
+
             if (mapSearchAdapter != null) {
                 mapSearchAdapter.upDateDataset(searchResults);
             }
