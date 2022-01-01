@@ -1,8 +1,11 @@
 package com.example.firstapp;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
@@ -13,23 +16,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.Glide;
-import com.google.android.material.tabs.TabLayout;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
 
-    private GalleryData galleryData;
+    private GalleryData galleryData, tempGalleryData;
     private Context context;
     private ContentResolver contentResolver;
+    private ImageUris loadedImageUris;
+    
 
     public void setGalleryData(GalleryData galleryData) {
         this.galleryData = galleryData;
@@ -45,26 +47,97 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     public GalleryAdapter(Context context) {
         this.context = context;
         galleryData = new GalleryData();
+
+
+
         Handler handler = new Handler() {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
-                Log.d("Handler","Message Received");
-                galleryData = (GalleryData) msg.obj;
                 notifyDataSetChanged();
             }
         };
-        Thread t = new Thread() {
+
+
+        Thread threadToSave = new Thread() {
             @Override
             public void run() {
                 super.run();
-                galleryData = parsePhotosToGD(getGalleryPhotos(context));
-                Message message = handler.obtainMessage(1,galleryData);
-                handler.sendMessage(message);
-                Log.d("Thread","Message sent");
+
+                Gson gson = new GsonBuilder().create();
+
+                ImageUris toSaveImageUris = new ImageUris();
+                for (int i = 0; i < galleryData.getSize(); i++){
+                    for (int j = 0; j < galleryData.getAlbum(i).getSize(); j++) {
+                        toSaveImageUris.addUri(galleryData.getAlbum(i).getImageURI(j));
+                    }
+                }
+
+                SharedPreferences.Editor editor = context.getSharedPreferences("ImageUris",MODE_PRIVATE).edit();
+                editor.putString("savedImageUris", gson.toJson(toSaveImageUris));
+                editor.commit();
             }
         };
-        t.start();
+
+
+        Handler loadMediaHandler = new Handler() {
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                galleryData = tempGalleryData;
+                notifyDataSetChanged();
+            }
+        };
+        Thread threadToLoadMedia = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                tempGalleryData = parsePhotosToGD(getGalleryPhotos(context));
+                if(loadedImageUris != null && loadedImageUris.getSize() > 0) {
+                    for (int i = 0; i < tempGalleryData.getSize(); i++) {
+                        int j = 0;
+                        for (; j < tempGalleryData.getAlbum(i).getSize(); j++) {
+                            if (loadedImageUris.findUri(tempGalleryData.getAlbum(i).getImageURI(j)) >= 0) {
+                                loadMediaHandler.sendMessage(handler.obtainMessage());
+                                break;
+                            }
+                        }
+                        if (j < tempGalleryData.getAlbum(i).getSize()) break;
+                    }
+                } else {
+                    loadMediaHandler.sendMessage(handler.obtainMessage());
+                }
+                threadToSave.start();
+            }
+        };
+
+        Thread threadToLoadSaved = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                Gson gson = new GsonBuilder().create();
+                SharedPreferences prefs = context.getSharedPreferences("ImageUris", MODE_PRIVATE);
+                String loadedJson = prefs.getString("savedImageUris", "");//If there is no YOURKEY found null will be the default value.
+                loadedImageUris = gson.fromJson(loadedJson, ImageUris.class);
+                if(loadedImageUris != null && loadedImageUris.getSize() > 0) {
+                    for (int i = loadedImageUris.getSize() - 1; i >= 0; i--) {
+                        Uri loadedUri = loadedImageUris.getUri(i);
+
+                        Cursor cursor =context.getContentResolver().query(loadedUri, null, null, null, null);
+                        if(cursor.moveToNext()){
+                            String path = cursor.getString(cursor.getColumnIndexOrThrow("_data"));
+                            String[] splitUris = path.split("/");
+                            galleryData.addImageURI(splitUris[splitUris.length - 2], loadedUri);
+                        }
+                    }
+                    handler.sendMessage(handler.obtainMessage());
+                }
+                threadToLoadMedia.start();
+            }
+        };
+        threadToLoadSaved.start();
+
     }
 
     @NonNull

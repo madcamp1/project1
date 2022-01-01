@@ -2,6 +2,8 @@ package com.example.firstapp;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.fragment.app.Fragment;
@@ -15,9 +17,9 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.net.Uri;
 import android.os.Build;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.FrameLayout;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -25,6 +27,7 @@ import com.google.android.material.tabs.TabLayout;
 public class TabActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
+    FrameLayout fragmentLayout;
 
     Uri imgUriToDel;
     String albumNameToMod;
@@ -90,12 +93,21 @@ public class TabActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
         tabLayout = findViewById(R.id.mainTab);
+        fragmentLayout = findViewById(R.id.fragmentContainerView);
         contactFragment = new Contact();
         galleryFragment = new Gallery();
         mapFragment = new Map();
 
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, contactFragment).commit();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+
+        Fragment fragment = fm.findFragmentById(R.id.fragmentContainerView);
+        if (fragment != null) ft.remove(fragment);
+        ft.add(R.id.fragmentContainerView, contactFragment);
+        ft.commitNow();
+//        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+
 
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("delete-img"));
@@ -134,7 +146,6 @@ public class TabActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("helllllo", requestCode + "" + resultCode);
         if (resultCode == Activity.RESULT_OK && requestCode == 0x1033) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 if (imgUriToDel != null) {
