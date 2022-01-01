@@ -51,6 +51,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         contactDatas = new ArrayList<ContactData>();
         this.context = context;
         Handler hd = new Handler(){
+            @SuppressLint("HandlerLeak")
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);

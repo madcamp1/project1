@@ -13,6 +13,7 @@
     <string name="call">전화 걸기</string>
     <string name="message">메시지 보내기</string>
     <string name="add">새 연락처 추가</string>
+    <string name="boldTest"><b>성심당</b></string>
 
 
 </resources>

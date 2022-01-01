@@ -18,5 +18,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:layout_width="310dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:id="@+id/search_engine"
+        app:layout_constraintBottom_toTopOf="@+id/searchView"
+        app:layout_constraintEnd_toStartOf="@+id/search_commit"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <ImageView
+        android:id="@+id/search_commit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="30dp"
+        android:paddingBottom="8dp"
+        android:src="@drawable/loupe"
+        app:layout_constraintBottom_toTopOf="@+id/searchView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchView"
+        android:layout_width="350dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/map" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

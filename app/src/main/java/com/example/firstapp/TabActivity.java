@@ -113,6 +113,7 @@ public class TabActivity extends AppCompatActivity {
                         break;
                     case 2:
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, mapFragment).commit();
+                        break;
                     default: break;
                 }
 
