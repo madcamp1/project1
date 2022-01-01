@@ -1,5 +1,6 @@
 package com.example.firstapp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -99,13 +100,16 @@ public class TabActivity extends AppCompatActivity {
         mapFragment = new Map();
 
 
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
 
-        Fragment fragment = fm.findFragmentById(R.id.fragmentContainerView);
-        if (fragment != null) ft.remove(fragment);
-        ft.add(R.id.fragmentContainerView, contactFragment);
-        ft.commitNow();
+        if(savedInstanceState != null) tabLayout.selectTab(tabLayout.getTabAt(savedInstanceState.getInt("LastTab")));
+        else {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            Fragment fragment = fm.findFragmentById(R.id.fragmentContainerView);
+            if (fragment != null) ft.remove(fragment);
+            ft.add(R.id.fragmentContainerView, contactFragment);
+            ft.commitNow();
+        }
 //        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
 
@@ -141,6 +145,12 @@ public class TabActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("LastTab", tabLayout.getSelectedTabPosition());
     }
 
     @Override
