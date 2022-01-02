@@ -28,16 +28,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ToggleButton;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraAnimation;
+import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.util.FusedLocationSource;
 
 import org.json.JSONArray;
@@ -54,6 +58,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.Buffer;
+import java.nio.file.attribute.AclEntryFlag;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +72,7 @@ public class Map extends Fragment implements OnMapReadyCallback {
     ArrayList<SearchResult> emptyList = new ArrayList<SearchResult>();
     private double latitude = 0;
     private double longitude = 0;
+    private int isCurrentLocationMode = -1;
 
     ArrayList<Marker> currentMarkers = new ArrayList<Marker>();
 
@@ -82,6 +88,13 @@ public class Map extends Fragment implements OnMapReadyCallback {
         parentContext = requireContext();
         rootView = (ViewGroup) inflater.inflate(R.layout.map_fragment, container, false);
         EditText searchContent = rootView.findViewById(R.id.search_engine);
+        ToggleButton modeChange = rootView.findViewById(R.id.toggle_button);
+        modeChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isCurrentLocationMode *= -1;
+            }
+        });
         ImageView searchCommit = rootView.findViewById(R.id.search_commit);
         searchCommit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,14 +128,6 @@ public class Map extends Fragment implements OnMapReadyCallback {
         naverMap.setLocationSource(fusedLocationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.Face);
         naverMap.getUiSettings().setLocationButtonEnabled(true);
-        naverMap.setOnMapClickListener(new NaverMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(@NonNull PointF pointF, @NonNull LatLng latLng) {
-//                Marker marker = new Marker();
-//                marker.setPosition(latLng);
-//                marker.setMap(naverMap);
-            }
-        });
         naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
             @Override
             public void onLocationChange(@NonNull Location location) {
@@ -131,6 +136,7 @@ public class Map extends Fragment implements OnMapReadyCallback {
             }
         });
         currentNaverMap = naverMap;
+        mapSearchAdapter.setCurrentMap(currentNaverMap);
     }
 
     public void searchViaEngine(String additionalQuery) throws IOException {
@@ -145,9 +151,15 @@ public class Map extends Fragment implements OnMapReadyCallback {
             Log.d("ERROR", "No location found");
             return;
         }
+        String query="";
         Address address = list.get(0);
-        String query = address.getAddressLine(0) + " " + additionalQuery;
+        if (isCurrentLocationMode > 0){
+            query = address.getAddressLine(0) + " " + additionalQuery;
+        } else{
+            query = additionalQuery;
+        }
         String[] params = {query};
+        Log.d("QUERYVIEW", query);
         new SearchTask().execute(params);
     }
 
@@ -197,8 +209,7 @@ public class Map extends Fragment implements OnMapReadyCallback {
                             searchResult.setTelePhone(currentObject.get("telephone").toString());
                             searchResult.setLink(currentObject.get("link").toString());
                             searchResult.setAddress(currentObject.get("address").toString());
-                            searchResult.setMapx(Integer.parseInt(currentObject.get("mapx").toString()));
-                            searchResult.setMapy(Integer.parseInt(currentObject.get("mapy").toString()));
+                            searchResult.setCoordinate(translateCoordinate(Integer.parseInt(currentObject.get("mapx").toString()), Integer.parseInt(currentObject.get("mapy").toString())));
                             searchResults.add(searchResult);
                         }
                     }
@@ -238,19 +249,33 @@ public class Map extends Fragment implements OnMapReadyCallback {
             }
 
             for (int i = 0; i < searchResults.size(); i++){
+                LatLng markerPosition = searchResults.get(i).getCoordinate();
                 Marker marker = new Marker();
-                GeoTransPoint oKA = new GeoTransPoint(searchResults.get(i).getMapx(), searchResults.get(i).getMapy());
-                GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
-                Double lat = oGeo.getY();
-                Double lng = oGeo.getX();
-                marker.setPosition(new LatLng(lat, lng));
+                marker.setPosition(markerPosition);
                 marker.setMap(currentNaverMap);
                 currentMarkers.add(marker);
+                marker.setOnClickListener(new Overlay.OnClickListener() {
+                    @Override
+                    public boolean onClick(@NonNull Overlay overlay) {
+                        CameraUpdate cameraUpdate = CameraUpdate.scrollAndZoomTo(markerPosition, 17).animate(CameraAnimation.Fly, 800);
+                        currentNaverMap.moveCamera(cameraUpdate);
+                        return false;
+                    }
+                });
             }
 
             if (mapSearchAdapter != null) {
                 mapSearchAdapter.upDateDataset(searchResults);
             }
+        }
+
+        public LatLng translateCoordinate(int coord_x, int coord_y){
+            GeoTransPoint oKA = new GeoTransPoint(coord_x, coord_y);
+            GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+            double lat = oGeo.getY();
+            double lng = oGeo.getX();
+
+            return new LatLng(lat, lng);
         }
     }
 

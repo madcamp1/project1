@@ -1,25 +1,26 @@
 package com.example.firstapp;
 
+import com.naver.maps.geometry.LatLng;
+
 public class SearchResult {
     private String title;
     private String category;
     private String telePhone;
     private String link;
     private String address;
-    private int mapx;
-    private int mapy;
+    private LatLng coordinate;
     SearchResult (){}
-    SearchResult (String title, String category, String telePhone, String link, String address, String mapx, String mapy) {
+    SearchResult (String title, String category, String telePhone, String link, String address, LatLng latLng) {
         this.title = title;
         this.category = category.equals("") ? "미분류" : category;
         this.telePhone = telePhone.equals("") ? "전화번호 없음" : telePhone;
         this.link = link.equals("") ? "링크 없음" : link;
         this.address = address.equals("") ? "주소 없음" : address;
-        this.mapx = Integer.parseInt(mapx);
-        this.mapy = Integer.parseInt(mapy);
+        this.coordinate = latLng;
     }
 
     public String getTitle() {
+
         return title;
     }
 
@@ -59,19 +60,11 @@ public class SearchResult {
         this.address = address;
     }
 
-    public int getMapx() {
-        return mapx;
+    public LatLng getCoordinate() {
+        return coordinate;
     }
 
-    public void setMapx(int mapx) {
-        this.mapx = mapx;
-    }
-
-    public int getMapy() {
-        return mapy;
-    }
-
-    public void setMapy(int mapy) {
-        this.mapy = mapy;
+    public void setCoordinate(LatLng coordinate) {
+        this.coordinate = coordinate;
     }
 }

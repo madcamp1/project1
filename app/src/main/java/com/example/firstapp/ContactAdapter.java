@@ -20,13 +20,16 @@ import android.provider.Contacts;
 import android.provider.ContactsContract;
 import android.text.Editable;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.Guideline;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -80,11 +83,16 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         return new Holder(view);
     }
 
+
+
     @Override
     public void onBindViewHolder(Holder viewHolder, @SuppressLint("RecyclerView") final int position) {
         //Define Actions with ItemView - e.g. onClick
         //Position: final (Should be Immutable)
         ContactData indivContact = contactDatas.get(position);
+        viewHolder.guideline_options.setGuidelinePercent(1.0F);
+
+
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -115,6 +123,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         }
         viewHolder.contactName.setText(indivContact.getName());
         viewHolder.phoneNumber.setText(indivContact.getPhoneNum());
+
+        viewHolder.phoneNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (viewHolder.optionIsVisible == 0) {
+                    viewHolder.guideline_options.setGuidelinePercent(0.85F);
+                    viewHolder.optionIsVisible = 1;
+                } else {
+                    viewHolder.guideline_options.setGuidelinePercent(1.0F);
+                    viewHolder.optionIsVisible = 0;
+                }
+            }
+        });
         viewHolder.call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,7 +154,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
                 context.startActivity(intent);
             }
         });
-        viewHolder.description.setText(indivContact.getDescription());
     }
 
     public Bitmap getPhotoFromId(ContentResolver contentResolver, long id, long photo_id) {
@@ -189,17 +209,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         public ImageView message;
         public TextView contactName;
         public TextView phoneNumber;
-        public TextView description;
+        public Guideline guideline_options;
+        public int optionIsVisible;
 
         public Holder(View itemView) {
             //Initialize Components in Item View
             super(itemView);
+            optionIsVisible = 0;
             image = (ImageView) itemView.findViewById(R.id.portrait);
             call = (ImageView) itemView.findViewById(R.id.call);
             message = (ImageView) itemView.findViewById(R.id.message);
             contactName = (TextView) itemView.findViewById(R.id.name);
             phoneNumber = (TextView) itemView.findViewById(R.id.phone_number);
-            description = (TextView) itemView.findViewById(R.id.description);
+            guideline_options = (Guideline) itemView.findViewById(R.id.guideline_options);
         }
     }
 
