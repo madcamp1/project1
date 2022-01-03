@@ -15,6 +15,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ThemedSpinnerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -41,16 +43,18 @@ class SwipeController extends Callback {
 
     private boolean swipeBack = false;
     private ButtonsState buttonShowedState = ButtonsState.GONE;
-    private static final int buttonWidth = 400;
+    private static final int buttonWidth = 300;
+    private static final int buttonWidthErrorOffset = 100;
     private Vibrator vibrator;
-
-
-    private boolean isSwiping = false;
-
-    private boolean isTaskOn = false;
 
     private Context callersContext;
     private ContactAdapter callersAdapter;
+
+    private boolean isSwiping = false;
+    private boolean currentTaskon = false;
+
+    private final int vibrateSeconds = 100;
+    private final int callInvokeSeconds = 300;
 
     SwipeController(Context context, ContactAdapter adapter){
         callersContext = context;
@@ -69,10 +73,7 @@ class SwipeController extends Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-//        if (direction == LEFT){
-//            Log.d("OOOO", "ㅇㅇ?");
-//            callersAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
-//        }
+        //완전히 swipe된 경우. swipe도중엔 찍히지 않음
     }
 
     @Override
@@ -92,177 +93,77 @@ class SwipeController extends Callback {
                             int actionState, boolean isCurrentlyActive) {
 
         if (actionState == ACTION_STATE_SWIPE) {
-            isSwiping = true;
-            setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            drawButtons(c, viewHolder, (int)dX);
+            setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive); //여기조건걸
+            if (dX >= buttonWidth|| dX <= -buttonWidth){
+                return;
+            }
+        }
+        if (buttonWidth-buttonWidthErrorOffset < dX && buttonWidth >= dX) {
+            recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX((float) -buttonWidth);
         }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        drawButtons(c, viewHolder);
-
     }
 
-    private void setTouchListener(final Canvas c,
-                                  final RecyclerView recyclerView,
-                                  final RecyclerView.ViewHolder viewHolder,
-                                  final float dX, final float dY,
-                                  final int actionState, final boolean isCurrentlyActive) {
+    private void setTouchListener(Canvas c,
+                                  RecyclerView recyclerView,
+                                  RecyclerView.ViewHolder viewHolder,
+                                  float dX, float dY,
+                                  int actionState, boolean isCurrentlyActive) {
+        Log.d("TTEST", "DD");
         recyclerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_MOVE && !isTaskOn){
-                    Log.d("OOOO", Float.toString(dX));
-                    if (dX <= -buttonWidth + 20){
-                        isTaskOn = true;
-
-                        event.setAction(MotionEvent.ACTION_DOWN);
-                        vibrator = (Vibrator) v.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(VibrationEffect.createOneShot(400, VibrationEffect.DEFAULT_AMPLITUDE));
-                        } else {
-                            vibrator.vibrate(400);
-                        }
-//                        ContactAdapter.Holder contactAdapter = (ContactAdapter.Holder) viewHolder;
-//                        String individContact = (String) contactAdapter.phoneNumber.getText();
-//                        Uri telUri = Uri.parse("tel:"+individContact);
-//                        callersContext.startActivity(new Intent("android.intent.action.CALL", telUri));
-//                        Log.d("OOOO", "call");
-                    }
-                }
-                float newDx = dX;
-//                Log.d("!!!!", Boolean.toString(swipeBack));
                 swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
-//                Log.d("!!!!!", Float.toString(dX));
-                Log.d("OOOO", "1--touch:" + Float.toString(dX));
-                if (swipeBack){
-                    Log.d("OOOO", "2-SWIPE BACK CONDITION");
-                    Log.d("OOOO", Float.toString(dX));
-                    Log.d("OOOO", Boolean.toString(isSwiping));
-                    Log.d("OOOO", Boolean.toString(swipeBack));
-                    Log.d("OOOO", Integer.toString(event.getAction()));
-                }
-
-                if (swipeBack && isSwiping && dX != 0) {
-                    if (dX <= -buttonWidth){
-                        newDx = -buttonWidth;
-                        buttonShowedState = ButtonsState.RIGHT_VISIBLE;
-                        vibrator = (Vibrator) v.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-                        SwipeController.super.onChildDraw(c, recyclerView, viewHolder, newDx, dY, actionState, isCurrentlyActive);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            vibrator.vibrate(VibrationEffect.createOneShot(400, VibrationEffect.DEFAULT_AMPLITUDE));
-                        } else {
-                            vibrator.vibrate(400);
-                        }
-//                        ContactAdapter.Holder contactAdapter = (ContactAdapter.Holder) viewHolder;
-//                        String individContact = (String) contactAdapter.phoneNumber.getText();
-//                        Uri telUri = Uri.parse("tel:"+individContact);
-//                        callersContext.startActivity(new Intent("android.intent.action.CALL", telUri));
-//                        Log.d("OOOO", "call");
-//
+                if (swipeBack && !currentTaskon) {
+                    currentTaskon = true;
+                    if (buttonWidth < dX){
+                        call(viewHolder);
+                        activateVibrator();
+                        recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX(buttonWidth);
                     }
-                    else if (200 < dX && dX <= buttonWidth) {
-                        buttonShowedState = ButtonsState.LEFT_VISIBLE;
-//                        Log.d("OOOO", "message");
+                    else if (-buttonWidth > dX){
+                        message(viewHolder);
+                        activateVibrator();
+                        recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX(-buttonWidth);
                     }
-
-                    if (buttonShowedState != ButtonsState.GONE) {
-                        Log.d("????", Float.toString(dX));
-                        //event.setAction(MotionEvent.ACTION_MASK);
-
-//                        vibrator = (Vibrator) v.getContext().getSystemService(Context.VIBRATOR_SERVICE);
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-//                        } else {
-//                            vibrator.vibrate(500);
-//                        }
-//                        ContactAdapter.Holder contactAdapter = (ContactAdapter.Holder) viewHolder;
-//                        String individContact = (String) contactAdapter.phoneNumber.getText();
-//
-//                        Log.d("OOOO", individContact);
-////
-//                        Uri telUri = Uri.parse("tel:"+individContact);
-//                        callersContext.startActivity(new Intent("android.intent.action.CALL", telUri));
-
-//                        Log.d("OOOO", (String) contactAdapter.phoneNumber.getText());
-//                        setItemsClickable(recyclerView, false);
-
-                    }
-
-                    isSwiping = false;
-                    swipeBack = false;
+                    currentTaskon = false;
                 }
                 return false;
             }
         });
     }
 
-    private void setTouchDownListener(final Canvas c,
-                                      final RecyclerView recyclerView,
-                                      final RecyclerView.ViewHolder viewHolder,
-                                      final float dX, final float dY,
-                                      final int actionState, final boolean isCurrentlyActive) {
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.d("OOOO", "ONTOUCHMODIFIED");
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    Log.d("OOOO", "down");
-//                    //setTouchUpListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//                }
-                return false;
-            }
-        });
-    }
+    public void activateVibrator(){
+        vibrator = (Vibrator) callersContext.getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(vibrateSeconds, VibrationEffect.DEFAULT_AMPLITUDE));
 
-    private void setTouchUpListener(final Canvas c,
-                                    final RecyclerView recyclerView,
-                                    final RecyclerView.ViewHolder viewHolder,
-                                    final float dX, final float dY,
-                                    final int actionState, final boolean isCurrentlyActive) {
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.d("OOOO", "2-TOUCHUP");
-                    SwipeController.super.onChildDraw(c, recyclerView, viewHolder, 0F, 0F, actionState, isCurrentlyActive);
-                    recyclerView.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            Log.d("TTTTT", "오");
-                            return false;
-                        }
-                    });
-                    setItemsClickable(recyclerView, true);
-                    swipeBack = false;
-                    buttonShowedState = ButtonsState.GONE;
-                }
-                return false;
-            }
-        });
-    }
-
-    private void setItemsClickable(RecyclerView recyclerView,
-                                   boolean isClickable) {
-        for (int i = 0; i < recyclerView.getChildCount(); ++i) {
-            recyclerView.getChildAt(i).setClickable(isClickable);
+        } else {
+            vibrator.vibrate(vibrateSeconds);
         }
+        currentTaskon = false;
     }
 
-    private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder) {
-        int buttonWidthWithoutPadding = buttonWidth - 20;
-        float corners = 16;
+    private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder, int direction) {
+        int buttonWidthWithoutPadding = buttonWidth;
 
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
 
-//        RectF leftButton = new RectF(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
-//        p.setColor(Color.BLUE);
-//        c.drawRoundRect(leftButton, corners, corners, p);
-//        drawText("EDIT", c, leftButton, p);
+        if (direction > 0){
+            Rect leftButton = new Rect(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
+            p.setColor(Color.GREEN);
+            c.drawRect(leftButton, p);
+            drawText("CALL", c, leftButton, p);
+        }
+        else if (direction < 0){
+            Rect rightButton = new Rect(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            p.setColor(Color.DKGRAY);
+            c.drawRect(rightButton, p);
+            drawText("MESSAGE", c, rightButton, p);
+        }
 
-        Rect rightButton = new Rect(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-        p.setColor(Color.RED);
-        c.drawRect(rightButton, p);
-        drawText("DELETE", c, rightButton, p);
     }
 
     private void drawText(String text, Canvas c, Rect button, Paint p) {
@@ -270,9 +171,25 @@ class SwipeController extends Callback {
         p.setColor(Color.WHITE);
         p.setAntiAlias(true);
         p.setTextSize(textSize);
-
+        p.setTextAlign(Paint.Align.LEFT);
         float textWidth = p.measureText(text);
         c.drawText(text, button.centerX()-(textWidth/2), button.centerY()+(textSize/2), p);
     }
 
+    private void call(RecyclerView.ViewHolder viewHolder){
+        ContactAdapter.Holder contactAdapter = (ContactAdapter.Holder) viewHolder;
+        String individContact = (String) contactAdapter.phoneNumber.getText();
+        Uri telUri = Uri.parse("tel:"+individContact);
+        callersContext.startActivity(new Intent("android.intent.action.CALL", telUri));
+    }
+
+    private void message(RecyclerView.ViewHolder viewHolder){
+        ContactAdapter.Holder contactAdapter = (ContactAdapter.Holder) viewHolder;
+        Uri msgUri = Uri.parse("tel:"+contactAdapter.phoneNumber.getText());
+        Intent intent = new Intent(Intent.ACTION_VIEW, msgUri);
+        intent.putExtra("address", contactAdapter.phoneNumber.getText());
+        intent.putExtra("sms_body", "");
+        intent.setType("vnd.android-dir/mms-sms");
+        callersContext.startActivity(intent);
+    }
 }

@@ -119,19 +119,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         }
         viewHolder.contactName.setText(indivContact.getName());
         viewHolder.phoneNumber.setText(indivContact.getPhoneNum());
-//
-//        viewHolder.phoneNumber.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (viewHolder.optionIsVisible == 0) {
-//                    viewHolder.guideline_options.setGuidelinePercent(0.85F);
-//                    viewHolder.optionIsVisible = 1;
-//                } else {
-//                    viewHolder.guideline_options.setGuidelinePercent(1.0F);
-//                    viewHolder.optionIsVisible = 0;
-//                }
-//            }
-//        });
+
         viewHolder.call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,23 +127,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
                 context.startActivity(new Intent("android.intent.action.CALL", telUri));
             }
         });
-        viewHolder.message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Uri msgUri = Uri.parse("tel:"+indivContact.getPhoneNum());
-                Intent intent = new Intent(Intent.ACTION_VIEW, msgUri);
-                intent.putExtra("address", indivContact.getPhoneNum());
-                intent.putExtra("sms_body", "");
-                intent.setType("vnd.android-dir/mms-sms");
-                context.startActivity(intent);
-            }
-        });
-//        viewHolder.message.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-//            @Override
-//            public void onSystemUiVisibilityChange(int i) {
-//
-//            }
-//        });
     }
 
     public Bitmap getPhotoFromId(ContentResolver contentResolver, long id, long photo_id) {
@@ -242,12 +213,12 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
                 ContactsContract.Contacts.PHOTO_ID,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.CONTACT_ID //??
+                ContactsContract.CommonDataKinds.Phone.CONTACT_ID
         };
         if (context == null) {
-            Log.d("DEBUG", "No context");
             return null;
         }
+
         String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;
         ArrayList<ContactData> result;
         String where = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + input + "%'" + " OR " + ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE '%" + input + "%'";
