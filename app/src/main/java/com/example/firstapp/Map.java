@@ -26,8 +26,10 @@ import com.naver.maps.map.overlay.InfoWindow;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.util.FusedLocationSource;
 
+import java.io.Serializable;
 
-public class Map extends Fragment implements OnMapReadyCallback {
+
+public class Map extends Fragment implements OnMapReadyCallback, Serializable {
 
     ViewGroup rootView;
     private FusedLocationSource fusedLocationSource;
