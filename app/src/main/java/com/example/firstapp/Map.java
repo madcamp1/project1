@@ -6,7 +6,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -23,9 +25,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ToggleButton;
@@ -96,14 +101,25 @@ public class Map extends Fragment implements OnMapReadyCallback {
             }
         });
         ImageView searchCommit = rootView.findViewById(R.id.search_commit);
-        searchCommit.setOnClickListener(new View.OnClickListener() {
+        searchCommit.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
-            public void onClick(View view) {
-                try {
-                    searchViaEngine(searchContent.getText().toString());
-                } catch (Exception e){
-                    e.printStackTrace();
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                ImageView myImage = (ImageView) view;
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    myImage.setColorFilter(Color.parseColor("#974A514C"), PorterDuff.Mode.SRC_OVER);
                 }
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    myImage.setColorFilter(Color.parseColor("#00ABCAB2"), PorterDuff.Mode.SRC_OVER);
+                    try {
+                        searchViaEngine(searchContent.getText().toString());
+                        InputMethodManager inputMethodManager = (InputMethodManager) parentContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(searchContent.getWindowToken(), 0);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                return false;
             }
         });
 

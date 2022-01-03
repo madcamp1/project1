@@ -15,7 +15,7 @@ public class SearchResult {
         this.category = category.equals("") ? "미분류" : category;
         this.telePhone = telePhone.equals("") ? "전화번호 없음" : telePhone;
         this.link = link.equals("") ? "링크 없음" : link;
-        this.address = address.equals("") ? "주소 없음" : address;
+        this.address = address.equals("") ? "주소 없음" : modifyAddress(address);
         this.coordinate = latLng;
     }
 
@@ -33,7 +33,7 @@ public class SearchResult {
     }
 
     public void setCategory(String category) {
-        this.category = category;
+        this.category = category.equals("") ? "미분류" : category;
     }
 
     public String getTelePhone() {
@@ -41,7 +41,7 @@ public class SearchResult {
     }
 
     public void setTelePhone(String telePhone) {
-        this.telePhone = telePhone;
+        this.telePhone = telePhone.equals("") ? "전화번호 없음" : telePhone;
     }
 
     public String getLink() {
@@ -49,7 +49,7 @@ public class SearchResult {
     }
 
     public void setLink(String link) {
-        this.link = link;
+        this.link = link.equals("") ? "링크 없음" : link;
     }
 
     public String getAddress() {
@@ -57,7 +57,7 @@ public class SearchResult {
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.address = address.equals("") ? "주소 없음" : modifyAddress(address);
     }
 
     public LatLng getCoordinate() {
@@ -66,5 +66,19 @@ public class SearchResult {
 
     public void setCoordinate(LatLng coordinate) {
         this.coordinate = coordinate;
+    }
+
+    private String modifyAddress (String address) {
+        String toReturn = "";
+        int contentLength = 15;
+        int currentStartIndex = 0;
+        while (currentStartIndex < address.length()){
+            int endPoint = Math.min(address.length(), currentStartIndex + contentLength);
+            toReturn += address.substring(currentStartIndex, endPoint);
+            toReturn += "\n";
+            if (endPoint == address.length()) break;
+            currentStartIndex += contentLength;
+        }
+        return toReturn.substring(0, toReturn.length()-1);
     }
 }

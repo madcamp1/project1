@@ -1,7 +1,6 @@
 package com.example.firstapp;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -11,48 +10,36 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Contacts;
 import android.provider.ContactsContract;
-import android.text.Editable;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
-
-import java.io.InputStream;
-import java.nio.channels.InterruptedByTimeoutException;
 import java.util.ArrayList;
-import java.util.TreeMap;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> {
 
-    private ArrayList<ContactData> contactDatas;
-
+    private static ArrayList<ContactData> contactDatas;
     private final String[] putOrDeleteMenu = {"연락처 수정하기", "연락처 삭제하기"};
 
-    Context context;
+    private final Context context;
 
     public ContactAdapter(Context context, String retrieve) {
         contactDatas = new ArrayList<ContactData>();
         this.context = context;
         Handler hd = new Handler(){
-            @SuppressLint("HandlerLeak")
             @Override
             public void handleMessage(@NonNull Message msg) {
                 super.handleMessage(msg);
@@ -87,11 +74,26 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
     public void onBindViewHolder(Holder viewHolder, @SuppressLint("RecyclerView") final int position) {
         //Define Actions with ItemView - e.g. onClick
         //Position: final (Should be Immutable)
+        if (contactDatas.size() == 0) return;
         ContactData indivContact = contactDatas.get(position);
 
-        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+
+        viewHolder.image.setImageBitmap(getPhotoFromId(context.getContentResolver(), indivContact.getPortraitSrc()));
+        if (indivContact.getPortraitSrc() == 0) {
+            viewHolder.image.setImageResource(R.drawable.user_profile);
+        }
+        viewHolder.contactName.setText(indivContact.getName());
+        viewHolder.phoneNumber.setText(indivContact.getPhoneNum());
+        viewHolder.image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("TOUCHCHECK", "2");
+            }
+        });
+        viewHolder.contactLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                Log.d("TOUCHCHECK", "1");
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setItems(putOrDeleteMenu, new DialogInterface.OnClickListener() {
                     @Override
@@ -113,38 +115,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
                 return true;
             }
         });
-        viewHolder.image.setImageBitmap(getPhotoFromId(context.getContentResolver(), indivContact.getContact_id(), indivContact.getPortraitSrc()));
-        if (indivContact.getPortraitSrc() == 0) {
-            viewHolder.image.setImageResource(R.drawable.user);
-        }
-        viewHolder.contactName.setText(indivContact.getName());
-        viewHolder.phoneNumber.setText(indivContact.getPhoneNum());
-
-        viewHolder.call.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Uri telUri = Uri.parse("tel:"+indivContact.getPhoneNum());
-                context.startActivity(new Intent("android.intent.action.CALL", telUri));
-            }
-        });
     }
 
-    public Bitmap getPhotoFromId(ContentResolver contentResolver, long id, long photo_id) {
+    public Bitmap getPhotoFromId(ContentResolver contentResolver, long photo_id) {
         byte[] photoBytes = null;
-        Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, photo_id); //uri path에 photo id 붙임
-        Cursor cursor = contentResolver.query(photoUri, new String[]{ContactsContract.CommonDataKinds.Photo.PHOTO}, null, null, null);
-        try {
+        Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, photo_id); //uri path 에 photo id 붙임
+        try (Cursor cursor = contentResolver.query(photoUri, new String[]{ContactsContract.CommonDataKinds.Photo.PHOTO}, null, null, null)) {
             if (cursor.moveToFirst()) photoBytes = cursor.getBlob(0);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            cursor.close();
         }
 
         if (photoBytes != null) {
             return resizingBitmap(BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length));
-        } else {
-            Log.d("DEBUG", "there's no photoBytes. Return null");
         }
         return null;
     }
@@ -178,11 +161,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
 
     public static class Holder extends RecyclerView.ViewHolder {
         public ImageView image;
-        public ImageView call;
-        public ImageView message;
         public TextView contactName;
         public TextView phoneNumber;
-        public Guideline guideline_options;
+        public ConstraintLayout contactLayout;
         public int optionIsVisible;
 
         public Holder(View itemView) {
@@ -190,10 +171,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
             super(itemView);
             optionIsVisible = 0;
             image = (ImageView) itemView.findViewById(R.id.portrait);
-            call = (ImageView) itemView.findViewById(R.id.call);
-            message = (ImageView) itemView.findViewById(R.id.message);
             contactName = (TextView) itemView.findViewById(R.id.name);
             phoneNumber = (TextView) itemView.findViewById(R.id.phone_number);
+            contactLayout = (ConstraintLayout) itemView.findViewById(R.id.contact_layout);
 
         }
     }
@@ -205,10 +185,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
     }
 
     public ArrayList<ContactData> getContactData(String input) {
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI; //android provider에서 제공하는 데이터 식별자
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI; //android provider 에서 제공하는 데이터 식별자
         //ContactsContract.Contacts - Constants for the Contact table
-        // == 동일한 사람을 나타내는 연락처 집계당 하나의 레코드가 되는 연락처 테이
-        //ContactsContract.CommonDataKinds = ContactsContract.Data 테이블의 common data type 을 정
+        // == 동일한 사람을 나타내는 연락처 집계당 하나의 레코드가 되는 연락처 테이블
+        //ContactsContract.CommonDataKinds = ContactsContract.Data 테이블의 common data type 을 정의
         String[] qr = new String[]{
                 ContactsContract.Contacts.PHOTO_ID,
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -258,4 +238,5 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         }
         return " OR " + ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + additionalQuery + "%'";
     }
+
 }

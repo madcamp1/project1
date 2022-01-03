@@ -91,16 +91,12 @@ class SwipeController extends Callback {
                             RecyclerView.ViewHolder viewHolder,
                             float dX, float dY,
                             int actionState, boolean isCurrentlyActive) {
-
         if (actionState == ACTION_STATE_SWIPE) {
             drawButtons(c, viewHolder, (int)dX);
             setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive); //여기조건걸
             if (dX >= buttonWidth|| dX <= -buttonWidth){
                 return;
             }
-        }
-        if (buttonWidth-buttonWidthErrorOffset < dX && buttonWidth >= dX) {
-            recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX((float) -buttonWidth);
         }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
     }
@@ -146,27 +142,27 @@ class SwipeController extends Callback {
     }
 
     private void drawButtons(Canvas c, RecyclerView.ViewHolder viewHolder, int direction) {
-        int buttonWidthWithoutPadding = buttonWidth;
-
+        int buttonWidthWithPadding = buttonWidth + 60;
+        float corners = 37;
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
 
         if (direction > 0){
-            Rect leftButton = new Rect(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
-            p.setColor(Color.GREEN);
-            c.drawRect(leftButton, p);
+            RectF leftButton = new RectF(itemView.getLeft() + 7, itemView.getTop()+10, itemView.getLeft() + buttonWidthWithPadding, itemView.getBottom()-10);
+            p.setColor(Color.parseColor("#295140"));
+            c.drawRoundRect(leftButton, corners, corners, p);
             drawText("CALL", c, leftButton, p);
         }
         else if (direction < 0){
-            Rect rightButton = new Rect(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+            RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithPadding, itemView.getTop()+10, itemView.getRight() - 7, itemView.getBottom()-10);
             p.setColor(Color.DKGRAY);
-            c.drawRect(rightButton, p);
+            c.drawRoundRect(rightButton, corners, corners, p);
             drawText("MESSAGE", c, rightButton, p);
         }
 
     }
 
-    private void drawText(String text, Canvas c, Rect button, Paint p) {
+    private void drawText(String text, Canvas c, RectF button, Paint p) {
         float textSize = 60;
         p.setColor(Color.WHITE);
         p.setAntiAlias(true);

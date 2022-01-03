@@ -2,14 +2,20 @@ package com.example.firstapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.media.Image;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SearchEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,23 +62,33 @@ public class MapSearchAdapter extends RecyclerView.Adapter<MapSearchAdapter.Hold
     public void onBindViewHolder(@NonNull Holder holder, final int position) {
         SearchResult individSearchResult = searchResultArrayList.get(position);
         holder.title.setText(Html.fromHtml(individSearchResult.getTitle()));
-        holder.link.setText(individSearchResult.getLink());
         holder.category.setText(individSearchResult.getCategory());
-        holder.telephone.setText(individSearchResult.getTelePhone());
         holder.address.setText(individSearchResult.getAddress());
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                ReviewDisplayFragment e = new ReviewDisplayFragment(individSearchResult.getTitle());
-                e.show(((FragmentActivity)currentContext).getSupportFragmentManager(), "event");
+                CameraUpdate cameraUpdate = CameraUpdate.scrollAndZoomTo(individSearchResult.getCoordinate(), 17).animate(CameraAnimation.Fly, 800);
+                currentMap.moveCamera(cameraUpdate);
                 return false;
             }
         });
-        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+        holder.searchReview.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                CameraUpdate cameraUpdate = CameraUpdate.scrollAndZoomTo(individSearchResult.getCoordinate(), 17).animate(CameraAnimation.Fly, 800);
-                currentMap.moveCamera(cameraUpdate);
+                ImageView myImage = (ImageView) view;
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.d("TOUCH?", "TOUCHDOWN");
+                    myImage.setColorFilter(Color.parseColor("#974A514C"), PorterDuff.Mode.SRC_OVER);
+                } else {
+                    myImage.setColorFilter(Color.parseColor("#00ABCAB2"), PorterDuff.Mode.SRC_OVER);
+                }
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    Log.d("TOUCH?", "TOUCHUP");
+                    myImage.setColorFilter(Color.parseColor("#00ABCAB2"), PorterDuff.Mode.SRC_OVER);
+                    ReviewDisplayFragment e = new ReviewDisplayFragment(individSearchResult.getTitle());
+                    e.show(((FragmentActivity)currentContext).getSupportFragmentManager(), "event");
+                }
                 return false;
             }
         });
@@ -91,18 +107,16 @@ public class MapSearchAdapter extends RecyclerView.Adapter<MapSearchAdapter.Hold
 
     public static class Holder extends RecyclerView.ViewHolder {
         public TextView title;
-        public TextView link;
         public TextView category;
-        public TextView telephone;
         public TextView address;
+        public ImageView searchReview;
 
         public Holder(View itemView){
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.search_title);
-            link = (TextView) itemView.findViewById(R.id.search_link);
             category = (TextView) itemView.findViewById(R.id.search_category);
-            telephone = (TextView) itemView.findViewById(R.id.search_telephone);
             address = (TextView) itemView.findViewById(R.id.search_address);
+            searchReview = (ImageView) itemView.findViewById(R.id.review_search_button);
         }
     }
 }

@@ -3,7 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/api_background.xml" value="0.48657460120058305" />
         <entry key="app/src/main/res/drawable/basic_frame.xml" value="0.23697916666666666" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.23697916666666666" />
+        <entry key="app/src/main/res/font-v26/basic_font.xml" value="0.25104166666666666" />
+        <entry key="app/src/main/res/font/basic_font.xml" value="0.2604166666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.26592451915846155" />
         <entry key="app/src/main/res/layout/activity_tab.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/album_item.xml" value="0.22" />
@@ -18,9 +22,9 @@
         <entry key="app/src/main/res/layout/gallery_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/itemview_conact.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/itemview_contact.xml" value="0.14895833333333333" />
-        <entry key="app/src/main/res/layout/map_fragment.xml" value="0.5034122609545719" />
+        <entry key="app/src/main/res/layout/map_fragment.xml" value="0.5776566757493188" />
         <entry key="app/src/main/res/layout/onclick_button.xml" value="0.2105978260869565" />
-        <entry key="app/src/main/res/layout/review_item_view.xml" value="0.23125" />
+        <entry key="app/src/main/res/layout/review_item_view.xml" value="0.44689104865618023" />
         <entry key="app/src/main/res/layout/search_itemview.xml" value="0.34862696071375926" />
         <entry key="app/src/main/res/layout/tab_view.xml" value="0.4000757972155082" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.23020833333333332" />

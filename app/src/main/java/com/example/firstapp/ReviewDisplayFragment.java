@@ -120,7 +120,6 @@ public class ReviewDisplayFragment extends DialogFragment {
         @Override
         protected void onPostExecute(ArrayList<ReviewData> reviewData) {
             super.onPostExecute(reviewData);
-            Log.d("OOOO", Integer.toString(reviewData.size()));
             if (reviewAdapter != null){
                 reviewAdapter.updateData(reviewData);
             }
