@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:start="0.1dp"
+        android:end="0.1dp"
+        android:top="0.1dp"
+        android:bottom="0.1dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="0.1dp"
+                android:color="@color/cardview_dark_background"/>
+            <solid android:color="#ffffff"/>
+        </shape>
+    </item>
+</layer-list>

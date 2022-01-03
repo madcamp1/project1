@@ -44,11 +44,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
 
     private ArrayList<ContactData> contactDatas;
 
-
     private final String[] putOrDeleteMenu = {"연락처 수정하기", "연락처 삭제하기"};
 
     Context context;
-
 
     public ContactAdapter(Context context, String retrieve) {
         contactDatas = new ArrayList<ContactData>();
@@ -90,8 +88,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         //Define Actions with ItemView - e.g. onClick
         //Position: final (Should be Immutable)
         ContactData indivContact = contactDatas.get(position);
-        viewHolder.guideline_options.setGuidelinePercent(1.0F);
-
 
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -123,19 +119,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         }
         viewHolder.contactName.setText(indivContact.getName());
         viewHolder.phoneNumber.setText(indivContact.getPhoneNum());
-
-        viewHolder.phoneNumber.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (viewHolder.optionIsVisible == 0) {
-                    viewHolder.guideline_options.setGuidelinePercent(0.85F);
-                    viewHolder.optionIsVisible = 1;
-                } else {
-                    viewHolder.guideline_options.setGuidelinePercent(1.0F);
-                    viewHolder.optionIsVisible = 0;
-                }
-            }
-        });
+//
+//        viewHolder.phoneNumber.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (viewHolder.optionIsVisible == 0) {
+//                    viewHolder.guideline_options.setGuidelinePercent(0.85F);
+//                    viewHolder.optionIsVisible = 1;
+//                } else {
+//                    viewHolder.guideline_options.setGuidelinePercent(1.0F);
+//                    viewHolder.optionIsVisible = 0;
+//                }
+//            }
+//        });
         viewHolder.call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -154,6 +150,12 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
                 context.startActivity(intent);
             }
         });
+//        viewHolder.message.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+//            @Override
+//            public void onSystemUiVisibilityChange(int i) {
+//
+//            }
+//        });
     }
 
     public Bitmap getPhotoFromId(ContentResolver contentResolver, long id, long photo_id) {
@@ -221,7 +223,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
             message = (ImageView) itemView.findViewById(R.id.message);
             contactName = (TextView) itemView.findViewById(R.id.name);
             phoneNumber = (TextView) itemView.findViewById(R.id.phone_number);
-            guideline_options = (Guideline) itemView.findViewById(R.id.guideline_options);
+
         }
     }
 

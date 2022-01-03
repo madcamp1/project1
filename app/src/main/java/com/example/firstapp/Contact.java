@@ -1,6 +1,7 @@
 package com.example.firstapp;
 
 import android.app.LoaderManager;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.provider.ContactsContract;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,16 +29,16 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Contact extends Fragment {
 
-
+    SwipeController swipeController;
     public Contact() {
     }
-
     private View view;
     private EditText search;
     private ImageView addButton;
@@ -74,8 +76,14 @@ public class Contact extends Fragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
 
         adapter = new ContactAdapter(getContext(), "");
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+
+        swipeController = new SwipeController(requireContext(), adapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,11 +112,9 @@ public class Contact extends Fragment {
             }
         });
 
+
         return rootView;
     }
-
-
-
 
 
 }
