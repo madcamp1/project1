@@ -1,65 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="1"
     android:background="#ABCAB2"
     tools:context=".Map">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.naver.maps.map.MapFragment"
-        android:layout_width="350dp"
-        android:layout_height="350dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:minHeight="320dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/map_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/search_engine"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/search_commit"
-        app:layout_constraintStart_toStartOf="@+id/map"
-        app:layout_constraintTop_toBottomOf="@+id/toggle_button" />
+        <fragment
+            android:id="@+id/map"
+            android:name="com.naver.maps.map.MapFragment"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:minHeight="320dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/search_commit"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:clickable="true"
-        android:paddingBottom="8dp"
-        android:src="@drawable/search"
-        app:layout_constraintEnd_toEndOf="@+id/map"
-        app:layout_constraintTop_toTopOf="@+id/search_engine" />
+        <EditText
+            android:id="@+id/search_engine"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toStartOf="@+id/search_commit"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/map"
+            app:layout_constraintTop_toBottomOf="@+id/map" />
 
-    <ToggleButton
-        android:id="@+id/toggle_button"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
-        android:textOff="일반 검색"
-        android:textOn="현 위치에서 검색"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/map"
-        app:layout_constraintTop_toBottomOf="@+id/map" />
+        <ImageView
+            android:id="@+id/search_commit"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:paddingBottom="8dp"
+            android:src="@drawable/search"
+            app:layout_constraintEnd_toEndOf="@+id/map"
+            app:layout_constraintTop_toBottomOf="@+id/map" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/searchView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/basic_frame"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/map"
-        app:layout_constraintStart_toStartOf="@+id/map"
-        app:layout_constraintTop_toBottomOf="@+id/search_engine" />
+        <ToggleButton
+            android:id="@+id/toggle_button"
+            android:layout_width="100dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:textOff="일반 검색"
+            android:textOn="근처 검색"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/map"
+            app:layout_constraintEnd_toEndOf="@+id/map" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/basic_frame"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/map"
+            app:layout_constraintStart_toStartOf="@+id/map"
+            app:layout_constraintTop_toBottomOf="@+id/search_engine" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
