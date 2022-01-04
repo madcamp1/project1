@@ -65,7 +65,6 @@ dependencies {
 
 ![https://github.com/madcamp1/project1/blob/master/Readme/MenuDiagram.png](https://github.com/madcamp1/project1/blob/master/Readme/MenuDiagram.png)
 
-projectStructure.png
 
 - The application consists of three functionality
 - Each function is served by TabActivity as fragment
@@ -471,14 +470,30 @@ DB를 사용한 이유는 어플리케이션을 실행할 때 마다 매번 Medi
 ## 4. Actual Use Screenshots
 
 ---
+
+# 스와이프하여 전화 걸기 & 문자 보내기
 ![https://github.com/madcamp1/project1/blob/master/Readme/1.gif](https://github.com/madcamp1/project1/blob/master/Readme/1.gif)
-![https://github.com/madcamp1/project1/blob/master/Readme/2.gif](https://github.com/madcamp1/project1/blob/master/Readme/2.gif)
+
+# 길게 터치하여 연락처 수정 및 삭제
 ![https://github.com/madcamp1/project1/blob/master/Readme/3.gif](https://github.com/madcamp1/project1/blob/master/Readme/3.gif)
+
+# 연락처 추가하기
 ![https://github.com/madcamp1/project1/blob/master/Readme/4.gif](https://github.com/madcamp1/project1/blob/master/Readme/4.gif)
+
+# 갤러리 불러오기
 ![https://github.com/madcamp1/project1/blob/master/Readme/5.gif](https://github.com/madcamp1/project1/blob/master/Readme/5.gif)
+
+# 사진 삭제하기
 ![https://github.com/madcamp1/project1/blob/master/Readme/6.gif](https://github.com/madcamp1/project1/blob/master/Readme/6.gif)
+
+# 사진 편집하기
 ![https://github.com/madcamp1/project1/blob/master/Readme/7.gif](https://github.com/madcamp1/project1/blob/master/Readme/7.gif)
+
+# 지도에서 검색하기
 ![https://github.com/madcamp1/project1/blob/master/Readme/8.gif](https://github.com/madcamp1/project1/blob/master/Readme/8.gif)
-![https://github.com/madcamp1/project1/blob/master/Readme/9.gif](https://github.com/madcamp1/project1/blob/master/Readme/9.gif)
+
+# 길게 눌러 이동하기
 ![https://github.com/madcamp1/project1/blob/master/Readme/10.gif](https://github.com/madcamp1/project1/blob/master/Readme/10.gif)
+
+# 리뷰 미리보기와 페이지로 이
 ![https://github.com/madcamp1/project1/blob/master/Readme/11.gif](https://github.com/madcamp1/project1/blob/master/Readme/11.gif)
