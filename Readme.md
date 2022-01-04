@@ -47,7 +47,7 @@ dependencies {
 
 ### Project Structure
 
-![https://www.notion.soProject1_Readme%206d00ec2adbb14a529616aa2db3d7f817/projectStructure.png](https://www.notion.soProject1_Readme%206d00ec2adbb14a529616aa2db3d7f817/projectStructure.png)
+![https://github.com/madcamp1/project1/blob/master/Readme/MenuDiagram.png](https://github.com/madcamp1/project1/blob/master/Readme/MenuDiagram.png)
 
 projectStructure.png
 
