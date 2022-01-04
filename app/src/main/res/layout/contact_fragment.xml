@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
     android:background="#ABCAB2"
-    tools:context=".Contact">
+    tools:context=".fragment.Contact">
 
     <EditText
         android:id="@+id/phoneNumberQuery"

@@ -1,4 +1,4 @@
-package com.example.firstapp;
+package com.example.firstapp.data;
 
 public class ReviewData {
     private String title;
@@ -6,7 +6,7 @@ public class ReviewData {
     private String postdate;
     private String link;
 
-    ReviewData(){}
+    public ReviewData(){}
 
     ReviewData(String title, String description, String postdate, String link){
         this.title = title;

@@ -1,44 +1,33 @@
-package com.example.firstapp;
+package com.example.firstapp.fragment;
 
-import android.app.LoaderManager;
-import android.content.ClipData;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 
-import android.os.Handler;
-import android.os.Message;
 import android.provider.ContactsContract;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.firstapp.R;
+import com.example.firstapp.modules.SwipeController;
+import com.example.firstapp.adapter.ContactAdapter;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Objects;
 
-public class Contact extends Fragment implements Serializable {
+public class ContactFragment extends Fragment implements Serializable {
 
     SwipeController swipeController;
-    public Contact() {
+    public ContactFragment() {
     }
     private View view;
     private EditText search;
@@ -47,8 +36,8 @@ public class Contact extends Fragment implements Serializable {
     private ContactAdapter adapter;
     ViewGroup rootView;
 
-    public static Contact newInstance() {
-        Contact fragment = new Contact();
+    public static ContactFragment newInstance() {
+        ContactFragment fragment = new ContactFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;

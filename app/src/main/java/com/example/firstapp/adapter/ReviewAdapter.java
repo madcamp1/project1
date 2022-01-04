@@ -1,10 +1,9 @@
-package com.example.firstapp;
+package com.example.firstapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.firstapp.R;
+import com.example.firstapp.data.ReviewData;
+
 import java.util.ArrayList;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.Holder>{
@@ -20,7 +22,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.Holder>{
     private ArrayList<ReviewData> reviewDatas;
     private Context currentContext;
 
-    ReviewAdapter(Context context,ArrayList<ReviewData> datas){
+    public ReviewAdapter(Context context, ArrayList<ReviewData> datas){
         currentContext = context;
         reviewDatas = datas;
     }

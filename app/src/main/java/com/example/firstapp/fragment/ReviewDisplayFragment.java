@@ -1,12 +1,10 @@
-package com.example.firstapp;
+package com.example.firstapp.fragment;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.firstapp.R;
+import com.example.firstapp.data.ReviewData;
+import com.example.firstapp.adapter.ReviewAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,14 +25,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-
-import javax.net.ssl.HttpsURLConnection;
 
 
 public class ReviewDisplayFragment extends DialogFragment {
@@ -45,7 +43,7 @@ public class ReviewDisplayFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
     }
 
-    ReviewDisplayFragment(String place){
+    public ReviewDisplayFragment(String place){
         targetPlace = place;
     }
 

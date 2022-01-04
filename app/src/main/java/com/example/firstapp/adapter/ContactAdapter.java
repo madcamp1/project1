@@ -1,4 +1,4 @@
-package com.example.firstapp;
+package com.example.firstapp.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -14,18 +14,18 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.Guideline;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.firstapp.data.ContactData;
+import com.example.firstapp.R;
 
 import java.util.ArrayList;
 

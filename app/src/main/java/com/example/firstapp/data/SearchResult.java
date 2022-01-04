@@ -1,4 +1,4 @@
-package com.example.firstapp;
+package com.example.firstapp.data;
 
 import com.naver.maps.geometry.LatLng;
 
@@ -9,7 +9,7 @@ public class SearchResult {
     private String link;
     private String address;
     private LatLng coordinate;
-    SearchResult (){}
+    public SearchResult(){}
     SearchResult (String title, String category, String telePhone, String link, String address, LatLng latLng) {
         this.title = title;
         this.category = category.equals("") ? "미분류" : category;

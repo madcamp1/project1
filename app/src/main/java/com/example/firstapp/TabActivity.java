@@ -28,7 +28,9 @@ import android.widget.FrameLayout;
 import com.example.firstapp.data.AlbumUri;
 import com.example.firstapp.data.GalleryDatabase;
 import com.example.firstapp.data.ImageUri;
+import com.example.firstapp.fragment.ContactFragment;
 import com.example.firstapp.fragment.GalleryFragment;
+import com.example.firstapp.fragment.MapFragment;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
@@ -40,9 +42,9 @@ public class TabActivity extends AppCompatActivity {
     TabLayout tabLayout;
     FrameLayout fragmentLayout;
 
-    Contact contactFragment;
+    ContactFragment contactFragment;
     GalleryFragment galleryFragment;
-    Map mapFragment;
+    MapFragment mapFragment;
     GalleryDatabase db;
 
     ImageUri imageUriToDel = null;
@@ -67,8 +69,8 @@ public class TabActivity extends AppCompatActivity {
             tabLayout.selectTab(tabLayout.getTabAt(savedInstanceState.getInt("LastTab")));
         } else {
             if (fragment != null) ft.remove(fragment);
-            contactFragment = new Contact();
-            mapFragment = new Map();
+            contactFragment = new ContactFragment();
+            mapFragment = new MapFragment();
             galleryFragment = GalleryFragment.newInstance(this);
             ft.add(R.id.fragmentContainerView, contactFragment);
             ft.commit();

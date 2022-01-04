@@ -1,4 +1,4 @@
-package com.example.firstapp;
+package com.example.firstapp.modules;
 
 public class GeoTransPoint {
 

@@ -1,46 +1,37 @@
-package com.example.firstapp;
+package com.example.firstapp.modules;
 
 
 import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static androidx.recyclerview.widget.ItemTouchHelper.LEFT;
 import static androidx.recyclerview.widget.ItemTouchHelper.RIGHT;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ThemedSpinnerAdapter;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.ItemTouchHelper.*;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.BufferedReader;
+import com.example.firstapp.adapter.ContactAdapter;
 
-enum ButtonsState {
-    GONE,
-    LEFT_VISIBLE,
-    RIGHT_VISIBLE
-}
 
-class SwipeController extends Callback {
 
+public class SwipeController extends Callback {
+    enum ButtonsState {
+        GONE,
+        LEFT_VISIBLE,
+        RIGHT_VISIBLE
+    }
     private boolean swipeBack = false;
     private ButtonsState buttonShowedState = ButtonsState.GONE;
     private static final int buttonWidth = 300;
@@ -56,7 +47,7 @@ class SwipeController extends Callback {
     private final int vibrateSeconds = 100;
     private final int callInvokeSeconds = 300;
 
-    SwipeController(Context context, ContactAdapter adapter){
+    public SwipeController(Context context, ContactAdapter adapter){
         callersContext = context;
         callersAdapter = adapter;
     }

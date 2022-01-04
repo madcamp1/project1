@@ -1,4 +1,4 @@
-package com.example.firstapp;
+package com.example.firstapp.data;
 
 import android.database.Cursor;
 import android.net.Uri;

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:minWidth="300dp"
     app:layout_constraintCircleRadius="15dp"
-    tools:context=".ReviewDisplayFragment">
+    tools:context=".fragment.ReviewDisplayFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/reviewView"
