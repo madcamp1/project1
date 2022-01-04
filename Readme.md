@@ -34,10 +34,26 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:19.0.0'
     implementation 'com.naver.maps:map-sdk:3.13.0'
     implementation 'com.google.android.material:material:1.1.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-    testImplementation 'junit:junit:4.13.2'
+    implementation 'com.naver.maps:map-sdk:3.13.0'
+    def room_version = "2.4.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    // optional - RxJava2 support for Room
+    implementation "androidx.room:room-rxjava2:$room_version"
+    // optional - RxJava3 support for Room
+    implementation "androidx.room:room-rxjava3:$room_version"
+    // optional - Guava support for Room, including Optional and ListenableFuture
+    implementation "androidx.room:room-guava:$room_version"
+    // optional - Test helpers
+    testImplementation "androidx.room:room-testing:$room_version"
+    // optional - Paging 3 Integration
+    implementation "androidx.room:room-paging:$room_version"
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    testImplementation 'junit:junit:4.13.2'
 }
 ```
 
@@ -47,7 +63,7 @@ dependencies {
 
 ### Overall Structure
 
-![https://www.notion.soProject1_Readme%206d00ec2adbb14a529616aa2db3d7f817/projectStructure.png](https://www.notion.soProject1_Readme%206d00ec2adbb14a529616aa2db3d7f817/projectStructure.png)
+![https://github.com/madcamp1/project1/blob/master/Readme/MenuDiagram.png](https://github.com/madcamp1/project1/blob/master/Readme/MenuDiagram.png)
 
 projectStructure.png
 
@@ -58,9 +74,8 @@ projectStructure.png
 
 ---
 
-![https://www.notion.soProject1_Readme%206d00ec2adbb14a529616aa2db3d7f817/Contact.drawio_(2).png](https://www.notion.soProject1_Readme%206d00ec2adbb14a529616aa2db3d7f817/Contact.drawio_(2).png)
+![https://github.com/madcamp1/project1/blob/master/Readme/ContactDiagram.png](https://github.com/madcamp1/project1/blob/master/Readme/ContactDiagram.png)
 
-Contact.drawio (2).png
 
 - 연락처 정보는 ContentsPrvider에서 제공하는 ContactsContract 데이터베이스를 이용했습니다.
 - ContactsContract DB의 각 테이블에서 어플리케이션 상의 연락처에 보여줄 정보들을 ContactsData 객체의 필드에 할당하고, 이를 ContactsAdapter상에서 ArrayList로 관리 및 사용했습니다.
@@ -122,7 +137,7 @@ Contact.drawio (2).png
 
 Gallery의 경우 Fragment - RecyclerView - Item(Fragment - RecuclerView - Item)의 이중 RecyclerView로 구성하였다. 
 
-![그림1.png](Readme%20f32e0e70f4f84883a18fbcdf4bef5aaf/%E1%84%80%E1%85%B3%E1%84%85%E1%85%B5%E1%86%B71.png)
+![https://github.com/madcamp1/project1/blob/master/Readme/%EA%B7%B8%EB%A6%BC1.png](https://github.com/madcamp1/project1/blob/master/Readme/%EA%B7%B8%EB%A6%BC1.png)
 
          
 
@@ -130,7 +145,7 @@ RecyclerView의 Item으로 Fragment를 바인딩 한 후 다시 내부에 Recycl
 
 DB를 사용한 이유는 어플리케이션을 실행할 때 마다 매번 MediaStore에서 Load하게 되면 사용자 경험에 좋지 않은 영향을 끼칠 것이라 판단하였기 때문이다. 어플이 처음 실행될 때, 그리고 Refresh버튼을 클릭할 때 MediaStore를 이용해 Storage와 DB를 연동하고, Image의 Uri는 LiveData를 이용해 DB에서 쿼리해 오도록 설계하였다. 이미지 로드시 뷰를 실시간으로 업데이트 하여, 사용자로 하여금 로딩이 크게 체감되지 않도록 하였다.
 
-![DataFlow.png](Readme%20f32e0e70f4f84883a18fbcdf4bef5aaf/DataFlow.png)
+![https://github.com/madcamp1/project1/blob/master/Readme/DataFlow.png](https://github.com/madcamp1/project1/blob/master/Readme/DataFlow.png)
 
 다만 Item에 Fragment를 바인딩 할 때, 화면에 “Draw”되지 않은 View에 Fragment add/replace가 되지 않는 현상이 있어 onDrawListener를 활용하여 ViewHolder가 화면에 Draw되는 시점에 Fragment를 바인딩한다. 아래는 해당 코드부인 AlbumAdapter의 onBindViewHolder 함수이다.
 
@@ -177,7 +192,145 @@ DB를 사용한 이유는 어플리케이션을 실행할 때 마다 매번 Medi
 ---
 
 ### Map
+---
 
+![https://github.com/madcamp1/project1/blob/master/Readme/MapDiagram.png](https://github.com/madcamp1/project1/blob/master/Readme/MapDiagram.png)
+
+- MapFragment는 OnMapReadyCallback인터페이스를 구현하는 Fragment입니다. 네이버 지도 안드로이드 SDK로부터 지도를 불러오는 작업이 완료되면 onMapReady함수에서 FusedLocationSource와 LocationTrackingMode등 지도에 필요한 설정을 마친 후 지도를 표시합니다.
+    
+    ```java
+    //MapFragment.java
+    
+    @UiThread
+    @Override
+    public void onMapReady(@NonNull NaverMap naverMap) {
+        naverMap.setLocationSource(fusedLocationSource);
+        naverMap.setLocationTrackingMode(LocationTrackingMode.Face);
+        naverMap.getUiSettings().setLocationButtonEnabled(true);
+        naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
+            @Override
+            public void onLocationChange(@NonNull Location location) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
+        });
+        currentNaverMap = naverMap;
+        mapSearchAdapter.setCurrentMap(currentNaverMap);
+    }
+    ```
+    
+- 지도를 포함한 Map Fragment를 기반으로 세 번째 탭의 View를 구성하였습니다. EditText를 포함한 UI에서 검색을 실행할 시 기본 검색/근처 검색 설정 여부에 따라 네이버 지역 검색 API에 각각 다른 Query Parameter로 요청을 보냈습니다.
+    
+    ```java
+    //MapFragment.java
+    
+    String query="";
+    Address address = list.get(0);
+    if (isCurrentLocationMode > 0){
+        query = address.getAddressLine(0) + " " + additionalQuery;
+    } else{
+        query = additionalQuery;
+    }
+    String[] params = {query};
+    new SearchTask().execute(params);
+    ```
+    
+- 검색 버튼이 입력을 받았을 경우 HTTP Connection에 대한 작업을 수행하는 것이기 때문에 Fragment에서 SearchTask를 AsyncTask로 실행합니다. HttpConnection에 대한 헤더 설정 및  QueryString을 추가해주는 과정을 거치게 됩니다.
+    
+    ```java
+    //MapFragment.java
+    private class SearchTask extends AsyncTask<String, Void, ArrayList<SearchResult>> {
+        String baseURL = "https://openapi.naver.com/v1/search/local.json";
+        URL searchURL;
+        String query;
+        HttpURLConnection connection;
+    
+        @Override
+        protected ArrayList<SearchResult> doInBackground(String... params) {
+            query = params[0];
+            ArrayList<SearchResult> searchResults = new ArrayList<SearchResult>();
+            try {
+    
+                String utf8query = URLEncoder.encode(query, "utf-8");
+                String requestQuery = addQueryString(baseURL, utf8query, "10", "1", "random");
+                searchURL = new URL(requestQuery);
+                connection = (HttpURLConnection) searchURL.openConnection();
+                if (connection != null){
+                    connection.setConnectTimeout(10000);
+                    connection.setRequestMethod("GET");
+                    connection.setDoInput(true); //no doOutPut
+                    connection.setRequestProperty("HOST", "openapi.naver.com");
+                    connection.setRequestProperty("Content-Type", "plain/text");
+    								//...
+    								//Request Headers
+                    int code = connection.getResponseCode();
+                    if (code == HttpURLConnection.HTTP_OK){
+                        InputStream inputStream = connection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = bufferedReader.readLine()) != null){
+                            stringBuilder.append(line+"\n");
+                        }
+                        bufferedReader.close();
+                        String result = stringBuilder.toString();
+                        JSONObject responseObject = new JSONObject(result);
+                        JSONArray jsonArray = (JSONArray) responseObject.get("items");
+                        for (int i = 0; i < jsonArray.length(); i++){
+                            //..Add Json Results to JsonObject
+                        }
+                    }
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+            return searchResults;
+        }
+    ```
+    
+- 검색에 대한 결과는 RecyclerView로 제공됩니다. 이 때 해당 결과 뷰를 길게 터치하거나 검색 결과를 따라서 맵에 표기된 마커를 터치하면 해당 위치로 줌 인과 함게 이동합니다. 이 때 네이버 지역 검색 API가 제공하는 카텍 좌표계와 moveCamera메서드가 기준으로 삼는 위도, 경도 좌표계가 다르기 때문에 이에 대한 변환 절차가 필요합니다.
+    
+    ```java
+    //MapFragment.java
+    
+    public LatLng translateCoordinate(int coord_x, int coord_y){
+        GeoTransPoint oKA = new GeoTransPoint(coord_x, coord_y);
+        GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+        double lat = oGeo.getY();
+        double lng = oGeo.getX();
+    
+        return new LatLng(lat, lng);
+    }
+    ```
+    
+    해당 메서드에 이용된 GeoTransPoint와 GeoTrans클래스는 오픈소스를 참고하였습니다.
+    
+- Recyclerview상에 표기된 버튼을 터치 시 지역 검색 API를 이용했을 때와 같은 방식으로 Fragment내부에 다시 Fragment View 및 Recyclerview가 표기됩니다. 해당 view는 다른 영역을 터치 시 사라집니다.
+    
+    ```java
+    //MapSearchAdapter.java
+    
+    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+        myImage.setColorFilter(Color.parseColor("#00ABCAB2"), PorterDuff.Mode.SRC_OVER);
+        ReviewDisplayFragment e = new ReviewDisplayFragment(individSearchResult.getTitle());
+        e.show(((FragmentActivity)currentContext).getSupportFragmentManager(), "event");
+    }
+    ```
+    
+- 생성된 Fragment내에는 블로그 리뷰들에 대한 미리보기들이 view로 나열되어 있으며, 이를 터치 시 해당 블로그 링크에 대한 인터넷 브라우저 접속으로 이어집니다.
+    
+    ```java
+    //ReviewAdapter.java
+    
+    @Override
+    public void onClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(individReviewData.getLink()));
+        currentContext.startActivity(intent);
+    }
+    ```
+
+
+<<<<<<< HEAD
 ---
 
 ![Map.drawio.png](Project1_Readme%206d00ec2adbb14a529616aa2db3d7f817/Map.drawio.png)
@@ -314,3 +467,10 @@ DB를 사용한 이유는 어플리케이션을 실행할 때 마다 매번 Medi
         currentContext.startActivity(intent);
     }
     ```
+=======
+## 4. Actual Use Screenshots
+
+---
+
+
+>>>>>>> b94b1275971ee4baab59b499fc1a5bf70392fccb

@@ -99,6 +99,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
                             notifyItemChanged(position);
                         }
                         else if (menuPosition == 1) {
+                            removeContact(indivContact);
                             contactDatas.remove(position); //db뿐만 아니라 recyclerview 내의 데이터도 삭제해줘야 함
                             notifyItemRemoved(position);
                         }
@@ -233,4 +234,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         return " OR " + ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + additionalQuery + "%'";
     }
 
+    public void deleteFromDB(){
+
+    }
 }
