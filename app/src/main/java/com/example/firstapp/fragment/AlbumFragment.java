@@ -69,7 +69,7 @@ public class AlbumFragment extends Fragment {
 
 
         rcvImages.setLayoutManager(new GridLayoutManager(context, 1, GridLayoutManager.HORIZONTAL, false));
-        ImageAdapter imageAdapter = new ImageAdapter(context);
+        ImageAdapter imageAdapter = new ImageAdapter(getContext());
         rcvImages.setAdapter(imageAdapter);
 
         imageViewModel = new ViewModelProvider(this).get(ImageViewModel.class);

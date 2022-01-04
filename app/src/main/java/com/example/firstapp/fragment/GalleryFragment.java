@@ -26,12 +26,10 @@ import java.io.Serializable;
 import java.util.List;
 
 
-public class GalleryFragment extends Fragment implements Serializable {
+public class GalleryFragment extends Fragment {
     private RecyclerView rcvAlbums;
     private ImageButton btnRefresh;
     private Context context;
-    private FragmentManager fm;
-    private FragmentTransaction ft;
 
     private AlbumViewModel albumViewModel;
 
@@ -39,11 +37,9 @@ public class GalleryFragment extends Fragment implements Serializable {
         // Required empty public constructor
     }
 
-    public static GalleryFragment newInstance(FragmentManager fm,FragmentTransaction ft, Context context) {
+    public static GalleryFragment newInstance(Context context) {
         GalleryFragment fragment = new GalleryFragment();
         fragment.context = context;
-        fragment.ft = ft;
-        fragment.fm = fm;
         return fragment;
     }
 
@@ -70,7 +66,8 @@ public class GalleryFragment extends Fragment implements Serializable {
 
         rcvAlbums.setLayoutManager(new LinearLayoutManager(context));
 
-        AlbumAdapter albumAdapter = new AlbumAdapter(fm, ft, context);
+        FragmentManager fm = getParentFragmentManager();
+        AlbumAdapter albumAdapter = new AlbumAdapter(context, fm);
         rcvAlbums.setAdapter(albumAdapter);
         albumViewModel = new ViewModelProvider(this).get(AlbumViewModel.class);
 

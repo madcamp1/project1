@@ -4,15 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_album"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:minHeight="200dp">
 
-    <FrameLayout
-        android:id="@+id/fcv_album"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

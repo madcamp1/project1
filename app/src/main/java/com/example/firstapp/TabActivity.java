@@ -65,14 +65,11 @@ public class TabActivity extends AppCompatActivity {
 
         if(savedInstanceState != null) {
             tabLayout.selectTab(tabLayout.getTabAt(savedInstanceState.getInt("LastTab")));
-            contactFragment = (Contact) savedInstanceState.getSerializable("contact");
-            galleryFragment = (GalleryFragment) savedInstanceState.getSerializable("gallery");
-            mapFragment = (Map) savedInstanceState.getSerializable("map");
         } else {
             if (fragment != null) ft.remove(fragment);
             contactFragment = new Contact();
             mapFragment = new Map();
-            galleryFragment = GalleryFragment.newInstance(fm, ft, this);
+            galleryFragment = GalleryFragment.newInstance(this);
             ft.add(R.id.fragmentContainerView, contactFragment);
             ft.commit();
         }
@@ -119,9 +116,6 @@ public class TabActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("LastTab", tabLayout.getSelectedTabPosition());
-        outState.putSerializable("map", mapFragment);
-        outState.putSerializable("gallery", galleryFragment);
-        outState.putSerializable("contact", contactFragment);
     }
 
     @Override

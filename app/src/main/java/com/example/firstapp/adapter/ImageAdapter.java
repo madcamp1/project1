@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Size;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +28,7 @@ import com.example.firstapp.R;
 import com.example.firstapp.data.ImageUri;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
@@ -42,7 +45,9 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     }
 
     public void setImageUris(List<ImageUri> imageUris) {
+        if (imageUris.size() == 0) return;
         this.imageUris = imageUris;
+        Collections.reverse(this.imageUris);
         notifyDataSetChanged();
     }
 
@@ -64,11 +69,14 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         if(cursor.moveToNext()) {
             uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getInt(cursor.getColumnIndex("_ID")));
             try {
-                thumbnail = context.getContentResolver().loadThumbnail(uri, new Size(200, 200), null);
-                Glide.with(context).load(thumbnail).into(holder.imageView);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    thumbnail = context.getContentResolver().loadThumbnail(uri, new Size(200, 200), null);
+                    Glide.with(context).load(thumbnail).into(holder.imageView);
+                } else {
+                    Glide.with(context).load(uri).into(holder.imageView);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-                Glide.with(context).load(uri).into(holder.imageView);
             }
         } else { //file not exists on storage -> delete from db only
             Intent intent = new Intent("delete-img-only-db");
