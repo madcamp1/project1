@@ -31,10 +31,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Contact extends Fragment {
+public class Contact extends Fragment implements Serializable {
 
     SwipeController swipeController;
     public Contact() {
