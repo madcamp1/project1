@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.firstapp.data.AlbumUri;
 import com.example.firstapp.data.GalleryDatabase;
@@ -203,6 +204,8 @@ public class TabActivity extends AppCompatActivity {
         } else {
             Log.e("getGalleryPhotos", "error getting URIs");
         }
+        galleryFragment = GalleryFragment.newInstance(this);
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainerView, galleryFragment).commit();
     }
 
     public BroadcastReceiver refreshDBMessageReceiver = new BroadcastReceiver() {
@@ -219,6 +222,8 @@ public class TabActivity extends AppCompatActivity {
                     intent.getStringExtra("album-path"),
                     intent.getStringExtra("album-name")));
             db.imageDao().deleteImagesInAlbum(intent.getStringExtra("album-path"));
+
+            //Toast.makeText(context,"앨범이 삭제되었습니다", Toast.LENGTH_SHORT).show();
 
             File dir = new File(intent.getStringExtra("album-path"));
             File[] childFileList = dir.listFiles();

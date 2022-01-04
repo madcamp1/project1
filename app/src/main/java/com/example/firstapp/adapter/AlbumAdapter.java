@@ -97,7 +97,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
     }
 
     public void setAlbumUris(List<AlbumUri> albumUris) {
-        if (albumUris.size() == 0) return;
         this.albumUris = albumUris;
         reloadAdapters();
         notifyDataSetChanged();
