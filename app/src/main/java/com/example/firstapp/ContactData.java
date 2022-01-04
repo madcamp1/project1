@@ -6,6 +6,8 @@ import android.provider.ContactsContract;
 
 import java.util.ArrayList;
 
+//ContactData.java
+
 public class ContactData {
     private long portraitSrc, contact_id;
     private String name, phoneNum, description;

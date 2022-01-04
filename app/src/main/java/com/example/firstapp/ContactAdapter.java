@@ -36,9 +36,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
 
     private final Context context;
 
-    public ContactAdapter(Context context, String retrieve) {
-        contactDatas = new ArrayList<ContactData>();
+    public ContactAdapter(Context context){
         this.context = context;
+        contactDatas = new ArrayList<ContactData>();
+        retrieveContact("");
+    }
+
+    public void retrieveContact(String retrieve) {
         Handler hd = new Handler(){
             @Override
             public void handleMessage(@NonNull Message msg) {
@@ -62,7 +66,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
     @Override //Overrides parent class'
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Create ViewHolder
-//        context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.contact_itemview, parent, false);
         //Return object to onBindViewHolder
         return new Holder(view);
@@ -74,7 +77,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
     public void onBindViewHolder(Holder viewHolder, @SuppressLint("RecyclerView") final int position) {
         //Define Actions with ItemView - e.g. onClick
         //Position: final (Should be Immutable)
-        if (contactDatas.size() == 0) return;
+        if (contactDatas == null || contactDatas.size() == 0) return;
         ContactData indivContact = contactDatas.get(position);
 
 
@@ -84,27 +87,18 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         }
         viewHolder.contactName.setText(indivContact.getName());
         viewHolder.phoneNumber.setText(indivContact.getPhoneNum());
-        viewHolder.image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("TOUCHCHECK", "2");
-            }
-        });
         viewHolder.contactLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Log.d("TOUCHCHECK", "1");
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setItems(putOrDeleteMenu, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int menuPosition) {
                         if (menuPosition == 0) {
-                            //
                             context.startActivity(new Intent(Intent.ACTION_EDIT, Uri.parse(ContactsContract.Contacts.CONTENT_URI + "/" + Long.toString(indivContact.getContact_id()))));
                             notifyItemChanged(position);
                         }
                         else if (menuPosition == 1) {
-                            Log.d("ONDELETE", Integer.toString(removeContact(indivContact)));
                             contactDatas.remove(position); //db뿐만 아니라 recyclerview 내의 데이터도 삭제해줘야 함
                             notifyItemRemoved(position);
                         }
@@ -156,7 +150,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
     }
 
     public int getItemCount() {
-        return contactDatas.size();
+        return (contactDatas == null) ? 0 : contactDatas.size();
     }
 
     public static class Holder extends RecyclerView.ViewHolder {

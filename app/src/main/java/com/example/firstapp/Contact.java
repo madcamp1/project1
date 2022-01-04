@@ -62,7 +62,7 @@ public class Contact extends Fragment {
     public void onResume() {
         super.onResume();
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
-        recyclerView.setAdapter(new ContactAdapter(requireContext(), ""));
+        recyclerView.setAdapter(new ContactAdapter(requireContext()));
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Contact extends Fragment {
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
 
-        adapter = new ContactAdapter(getContext(), "");
+        adapter = new ContactAdapter(getContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
@@ -108,7 +108,9 @@ public class Contact extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
-                recyclerView.setAdapter(new ContactAdapter(requireContext(), editable.toString()));
+                ContactAdapter contactAdapter = (ContactAdapter) recyclerView.getAdapter();
+                assert contactAdapter != null;
+                contactAdapter.retrieveContact(editable.toString());
             }
         });
 
