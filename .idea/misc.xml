@@ -3,7 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../../layout/custom_preview.xml" value="0.24635416666666668" />
         <entry key="app/src/main/res/drawable/api_background.xml" value="0.48657460120058305" />
         <entry key="app/src/main/res/drawable/basic_frame.xml" value="0.23697916666666666" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.23697916666666666" />
@@ -14,7 +13,6 @@
         <entry key="app/src/main/res/layout/album_item.xml" value="0.22" />
         <entry key="app/src/main/res/layout/contact_fragment.xml" value="0.2892768079800499" />
         <entry key="app/src/main/res/layout/contact_itemview.xml" value="0.43200722688776294" />
-        <entry key="app/src/main/res/layout/fragment_album.xml" value="0.23072916666666668" />
         <entry key="app/src/main/res/layout/fragment_contacts.xml" value="0.3276321433681654" />
         <entry key="app/src/main/res/layout/fragment_empty.xml" value="0.21458333333333332" />
         <entry key="app/src/main/res/layout/fragment_gallery.xml" value="0.23020833333333332" />
@@ -22,13 +20,9 @@
         <entry key="app/src/main/res/layout/fragment_tab_frame.xml" value="0.21458333333333332" />
         <entry key="app/src/main/res/layout/gallery_fragment.xml" value="0.15208333333333332" />
         <entry key="app/src/main/res/layout/gallery_item.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/item_album.xml" value="0.23072916666666668" />
-        <entry key="app/src/main/res/layout/item_image.xml" value="0.23072916666666668" />
-        <entry key="app/src/main/res/layout/itemview_conact.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/itemview_conact.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/itemview_contact.xml" value="0.14895833333333333" />
-        <entry key="app/src/main/res/layout/map_fragment.xml" value="0.22552083333333334" />
-        <entry key="app/src/main/res/layout/map_fragment.xml" value="0.5776566757493188" />
+        <entry key="app/src/main/res/layout/map_fragment.xml" value="0.19930292887793252" />
         <entry key="app/src/main/res/layout/onclick_button.xml" value="0.2105978260869565" />
         <entry key="app/src/main/res/layout/review_item_view.xml" value="0.44689104865618023" />
         <entry key="app/src/main/res/layout/search_itemview.xml" value="0.34862696071375926" />
