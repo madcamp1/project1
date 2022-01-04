@@ -74,8 +74,8 @@ public class Contact extends Fragment {
         addButton = (ImageView) rootView.findViewById(R.id.add);
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
-        ContactAdapter
-        adapter = new (getContext(), "");
+
+        adapter = new ContactAdapter(getContext(), "");
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
