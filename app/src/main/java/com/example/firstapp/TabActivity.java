@@ -65,13 +65,13 @@ public class TabActivity extends AppCompatActivity {
         Fragment fragment = fm.findFragmentById(R.id.fragmentContainerView);
 
 
+        contactFragment = new ContactFragment();
+        mapFragment = new MapFragment();
+        galleryFragment = GalleryFragment.newInstance(this);
         if(savedInstanceState != null) {
             tabLayout.selectTab(tabLayout.getTabAt(savedInstanceState.getInt("LastTab")));
         } else {
             if (fragment != null) ft.remove(fragment);
-            contactFragment = new ContactFragment();
-            mapFragment = new MapFragment();
-            galleryFragment = GalleryFragment.newInstance(this);
             ft.add(R.id.fragmentContainerView, contactFragment);
             ft.commit();
         }
