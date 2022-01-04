@@ -155,7 +155,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return;
         }
         if (list.size() == 0) {
-            Log.d("ERROR", "No location found");
             return;
         }
         String query="";
@@ -166,7 +165,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             query = additionalQuery;
         }
         String[] params = {query};
-        Log.d("QUERYVIEW", query);
         new SearchTask().execute(params);
     }
 

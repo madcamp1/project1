@@ -43,7 +43,7 @@ dependencies {
 
 ---
 
-### Project Structure
+### Overall Structure
 
 ![projectStructure.png](Project1_Readme%206d00ec2adbb14a529616aa2db3d7f817/projectStructure.png)
 
@@ -212,7 +212,7 @@ dependencies {
             }
         ```
         
-        Swipe event를 통한 변위에 따라 메시지, 통화에 대한 안내문이 출력됩니다. 손가락을 뗐을 때에는 진동과 함께 통화 혹은 메시지에 대한 activity로 넘어갑니다.
+        Swipe event를 통한 변위에 따라 메시지, 통화에 대한 안내문이 출력됩니다. 손가락을 뗐을 때에는 진동과 함께 통화 혹은 메시지에 대한 activity를 호출합니다.
         
         ```java
         //SwipeController.java
@@ -243,10 +243,139 @@ dependencies {
 
 ### Map
 
-## 4. Implementation Detail
-
 ---
 
-리사이징 거침
+![Map.drawio.png](Project1_Readme%206d00ec2adbb14a529616aa2db3d7f817/Map.drawio.png)
 
-SwipeController 는 ItemtouchHelper.Callback 클래스를 상속하여 swipe관련 method 오버라이딩
+- MapFragment는 OnMapReadyCallback인터페이스를 구현하는 Fragment입니다. 네이버 지도 안드로이드 SDK로부터 지도를 불러오는 작업이 완료되면 onMapReady함수에서 FusedLocationSource와 LocationTrackingMode등 지도에 필요한 설정을 마친 후 지도를 표시합니다.
+    
+    ```java
+    //MapFragment.java
+    
+    @UiThread
+    @Override
+    public void onMapReady(@NonNull NaverMap naverMap) {
+        naverMap.setLocationSource(fusedLocationSource);
+        naverMap.setLocationTrackingMode(LocationTrackingMode.Face);
+        naverMap.getUiSettings().setLocationButtonEnabled(true);
+        naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
+            @Override
+            public void onLocationChange(@NonNull Location location) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+            }
+        });
+        currentNaverMap = naverMap;
+        mapSearchAdapter.setCurrentMap(currentNaverMap);
+    }
+    ```
+    
+- 지도를 포함한 Map Fragment를 기반으로 세 번째 탭의 View를 구성하였습니다. EditText를 포함한 UI에서 검색을 실행할 시 기본 검색/근처 검색 설정 여부에 따라 네이버 지역 검색 API에 각각 다른 Query Parameter로 요청을 보냈습니다.
+    
+    ```java
+    //MapFragment.java
+    
+    String query="";
+    Address address = list.get(0);
+    if (isCurrentLocationMode > 0){
+        query = address.getAddressLine(0) + " " + additionalQuery;
+    } else{
+        query = additionalQuery;
+    }
+    String[] params = {query};
+    new SearchTask().execute(params);
+    ```
+    
+- 검색 버튼이 입력을 받았을 경우 HTTP Connection에 대한 작업을 수행하는 것이기 때문에 Fragment에서 SearchTask를 AsyncTask로 실행합니다. HttpConnection에 대한 헤더 설정 및  QueryString을 추가해주는 과정을 거치게 됩니다.
+    
+    ```java
+    //MapFragment.java
+    private class SearchTask extends AsyncTask<String, Void, ArrayList<SearchResult>> {
+        String baseURL = "https://openapi.naver.com/v1/search/local.json";
+        URL searchURL;
+        String query;
+        HttpURLConnection connection;
+    
+        @Override
+        protected ArrayList<SearchResult> doInBackground(String... params) {
+            query = params[0];
+            ArrayList<SearchResult> searchResults = new ArrayList<SearchResult>();
+            try {
+    
+                String utf8query = URLEncoder.encode(query, "utf-8");
+                String requestQuery = addQueryString(baseURL, utf8query, "10", "1", "random");
+                searchURL = new URL(requestQuery);
+                connection = (HttpURLConnection) searchURL.openConnection();
+                if (connection != null){
+                    connection.setConnectTimeout(10000);
+                    connection.setRequestMethod("GET");
+                    connection.setDoInput(true); //no doOutPut
+                    connection.setRequestProperty("HOST", "openapi.naver.com");
+                    connection.setRequestProperty("Content-Type", "plain/text");
+    								//...
+    								//Request Headers
+                    int code = connection.getResponseCode();
+                    if (code == HttpURLConnection.HTTP_OK){
+                        InputStream inputStream = connection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line;
+                        while ((line = bufferedReader.readLine()) != null){
+                            stringBuilder.append(line+"\n");
+                        }
+                        bufferedReader.close();
+                        String result = stringBuilder.toString();
+                        JSONObject responseObject = new JSONObject(result);
+                        JSONArray jsonArray = (JSONArray) responseObject.get("items");
+                        for (int i = 0; i < jsonArray.length(); i++){
+                            //..Add Json Results to JsonObject
+                        }
+                    }
+                }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+            return searchResults;
+        }
+    ```
+    
+- 검색에 대한 결과는 RecyclerView로 제공됩니다. 이 때 해당 결과 뷰를 길게 터치하거나 검색 결과를 따라서 맵에 표기된 마커를 터치하면 해당 위치로 줌 인과 함게 이동합니다. 이 때 네이버 지역 검색 API가 제공하는 카텍 좌표계와 moveCamera메서드가 기준으로 삼는 위도, 경도 좌표계가 다르기 때문에 이에 대한 변환 절차가 필요합니다.
+    
+    ```java
+    //MapFragment.java
+    
+    public LatLng translateCoordinate(int coord_x, int coord_y){
+        GeoTransPoint oKA = new GeoTransPoint(coord_x, coord_y);
+        GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+        double lat = oGeo.getY();
+        double lng = oGeo.getX();
+    
+        return new LatLng(lat, lng);
+    }
+    ```
+    
+    해당 메서드에 이용된 GeoTransPoint와 GeoTrans클래스는 오픈소스를 참고하였습니다.
+    
+- Recyclerview상에 표기된 버튼을 터치 시 지역 검색 API를 이용했을 때와 같은 방식으로 Fragment내부에 다시 Fragment View 및 Recyclerview가 표기됩니다. 해당 view는 다른 영역을 터치 시 사라집니다.
+    
+    ```java
+    //MapSearchAdapter.java
+    
+    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+        myImage.setColorFilter(Color.parseColor("#00ABCAB2"), PorterDuff.Mode.SRC_OVER);
+        ReviewDisplayFragment e = new ReviewDisplayFragment(individSearchResult.getTitle());
+        e.show(((FragmentActivity)currentContext).getSupportFragmentManager(), "event");
+    }
+    ```
+    
+- 생성된 Fragment내에는 블로그 리뷰들에 대한 미리보기들이 view로 나열되어 있으며, 이를 터치 시 해당 블로그 링크에 대한 인터넷 브라우저 접속으로 이어집니다.
+    
+    ```java
+    //ReviewAdapter.java
+    
+    @Override
+    public void onClick(View view) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(individReviewData.getLink()));
+        currentContext.startActivity(intent);
+    }
+    ```
