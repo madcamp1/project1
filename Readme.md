@@ -467,10 +467,18 @@ DB를 사용한 이유는 어플리케이션을 실행할 때 마다 매번 Medi
         currentContext.startActivity(intent);
     }
     ```
-=======
+===
 ## 4. Actual Use Screenshots
 
 ---
-
-
->>>>>>> b94b1275971ee4baab59b499fc1a5bf70392fccb
+![https://github.com/madcamp1/project1/blob/master/Readme/1.gif](https://github.com/madcamp1/project1/blob/master/Readme/1.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/2.gif](https://github.com/madcamp1/project1/blob/master/Readme/2.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/3.gif](https://github.com/madcamp1/project1/blob/master/Readme/3.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/4.gif](https://github.com/madcamp1/project1/blob/master/Readme/4.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/5.gif](https://github.com/madcamp1/project1/blob/master/Readme/5.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/6.gif](https://github.com/madcamp1/project1/blob/master/Readme/6.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/7.gif](https://github.com/madcamp1/project1/blob/master/Readme/7.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/8.gif](https://github.com/madcamp1/project1/blob/master/Readme/8.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/9.gif](https://github.com/madcamp1/project1/blob/master/Readme/9.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/10.gif](https://github.com/madcamp1/project1/blob/master/Readme/10.gif)
+![https://github.com/madcamp1/project1/blob/master/Readme/11.gif](https://github.com/madcamp1/project1/blob/master/Readme/11.gif)
