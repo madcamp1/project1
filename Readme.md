@@ -329,11 +329,6 @@ DB를 사용한 이유는 어플리케이션을 실행할 때 마다 매번 Medi
     ```
 
 
-<<<<<<< HEAD
----
-
-![Map.drawio.png](Project1_Readme%206d00ec2adbb14a529616aa2db3d7f817/Map.drawio.png)
-
 - MapFragment는 OnMapReadyCallback인터페이스를 구현하는 Fragment입니다. 네이버 지도 안드로이드 SDK로부터 지도를 불러오는 작업이 완료되면 onMapReady함수에서 FusedLocationSource와 LocationTrackingMode등 지도에 필요한 설정을 마친 후 지도를 표시합니다.
     
     ```java
