@@ -80,12 +80,13 @@ dependencies {
 - ContactsContract DB의 각 테이블에서 어플리케이션 상의 연락처에 보여줄 정보들을 ContactsData 객체의 필드에 할당하고, 이를 ContactsAdapter상에서 ArrayList로 관리 및 사용했습니다.
     
     ```
-    //ContactData.javapublic 
-    class ContactData {    
+    //ContactData.java
+    public class ContactData {    
     	private long portraitSrc, contact_id;
 	private String name, phoneNum, description;
 	public ContactData(){};
-	public ContactData(long portraitSrc, String name, String phoneNum, String description, long contact_id) {        this.portraitSrc = portraitSrc;        this.name = name;        this.phoneNum = phoneNum;        this.description = description;        this.contact_id = contact_id;    }
+	public ContactData(long portraitSrc, String name, String phoneNum, String description, long contact_id) {        
+	this.portraitSrc = portraitSrc;        this.name = name;        this.phoneNum = phoneNum;        this.description = description;        this.contact_id = contact_id;    }
 	//..Getter & Setter}
     ```
     
@@ -122,39 +123,106 @@ dependencies {
 - 내부 연락처에서 정보를 가져와 Adapter상의 ContactData list에 불러오는 과정은 JVM에 별도로 Thread를 할당한 뒤 결과값을 Handler로 받아오도록 구현했습니다.
     
     ```
-    //ContactAdapter.javaHandler hd = new Handler(){            @Override            public void handleMessage(@NonNull Message msg) {                super.handleMessage(msg);                contactDatas = (ArrayList<ContactData>) msg.obj;                notifyDataSetChanged();            }};new Thread(){    @Override    public void run() {        super.run();        contactDatas = getContactData(retrieve);        Message msg = hd.obtainMessage(1, contactDatas);        hd.sendMessage(msg);    }}.start();
+    //ContactAdapter.java
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                contactDatas = getContactData(retrieve);
+                Message msg = hd.obtainMessage(1, contactDatas);
+                hd.sendMessage(msg);
+            }
+        }.start();
     ```
     
 - Contact Fragment — Listener
     1. 상단의 검색창 텍스트 변경 시 retrieve함수를 호출하여 실시간으로 검색 및 출력합니다.
         
         ```
-        //Contact.javapublic void afterTextChanged(Editable editable) {    recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);    ContactAdapter contactAdapter = (ContactAdapter) recyclerView.getAdapter();    assert contactAdapter != null;    contactAdapter.retrieveContact(editable.toString());}
+        //Contact.java
+	public void afterTextChanged(Editable editable) {
+		recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
+		ContactAdapter contactAdapter = (ContactAdapter) recyclerView.getAdapter();
+		assert contactAdapter != null;
+		contactAdapter.retrieveContact(editable.toString());
+	}
         ```
         
     2. 하단의 추가 버튼 클릭 시 연락처 추가 Activity로 이동합니다.
         
         ```
-        //Contact.javapublic void onClick(View view) {    Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);    intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);    requireContext().startActivity(intent);}
+        //Contact.java
+	    public void onClick(View view) {
+		Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
+		intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
+		requireContext().startActivity(intent);
+	    }
         ```
         
 - Recyclerview — Listener
     1. ItemView를 길게 클릭 시 연락처 수정 및 삭제에 대한 Dialog 호출합니다. 선택에 따라 해당하는 동작 수행합니다.
         
         ```
-        //ContactAdapter.java@Overridepublic boolean onLongClick(View view) {    AlertDialog.Builder builder = new AlertDialog.Builder(context);    builder.setItems(putOrDeleteMenu, new DialogInterface.OnClickListener() {        @Override        public void onClick(DialogInterface dialogInterface, int menuPosition) {            if (menuPosition == 0) {                context.startActivity(new Intent(Intent.ACTION_EDIT, Uri.parse(ContactsContract.Contacts.CONTENT_URI + "/" + Long.toString(indivContact.getContact_id()))));                notifyItemChanged(position);            }            else if (menuPosition == 1) {                contactDatas.remove(position); //db뿐만 아니라 recyclerview 내의 데이터도 삭제해줘야 함                notifyItemRemoved(position);            }        }    });    builder.setNegativeButton("취소", null);    builder.show();    return true;}
+        //ContactAdapter.java
+	@Override
+	public boolean onLongClick(View view) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setItems(putOrDeleteMenu, new DialogInterface.OnClickListener() {
+		@Override
+			public void onClick(DialogInterface dialogInterface, int menuPosition) {
+				if (menuPosition == 0) {
+					context.startActivity(new Intent(Intent.ACTION_EDIT, Uri.parse(ContactsContract.Contacts.CONTENT_URI + "/" + Long.toString(indivContact.getContact_id()))));
+					notifyItemChanged(position);
+				}            
+				else if (menuPosition == 1) {                
+					contactDatas.remove(position); //db뿐만 아니라 recyclerview 내의 데이터도 삭제해줘야 함
+					notifyItemRemoved(position);
+					}
+				}    });
+		builder.setNegativeButton("취소", null);
+		builder.show();
+		return true;
+	}
         ```
         
     2. Swipe event의 경우 SwipeController 클래스를 추가적으로 구현한 뒤 Recyclerview에 붙여서 처리했습니다. SwipeController 는 ItemtouchHelper.Callback 클래스를 상속한 클래스이며 swipe관련 method를 오버라이딩하여 사용하는 Class입니다.
         
         ```
-        //SwipeController.java@Override    public void onChildDraw(Canvas c,                            RecyclerView recyclerView,                            RecyclerView.ViewHolder viewHolder,                            float dX, float dY,                            int actionState, boolean isCurrentlyActive) {        if (actionState == ACTION_STATE_SWIPE) {            drawButtons(c, viewHolder, (int)dX);            setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive); //여기조건걸            if (dX >= buttonWidth|| dX <= -buttonWidth){                return;            }        }        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);    }
+        //SwipeController.java
+	@Override    
+	public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+		if (actionState == ACTION_STATE_SWIPE) {
+			drawButtons(c, viewHolder, (int)dX); 
+			setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+			if (dX >= buttonWidth|| dX <= -buttonWidth){
+				return;            
+			}        
+		}        
+		super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+	}
         ```
         
         Swipe event를 통한 변위에 따라 메시지, 통화에 대한 안내문이 출력됩니다. 손가락을 뗐을 때에는 진동과 함께 통화 혹은 메시지에 대한 activity를 호출합니다.
         
         ```
-        //SwipeController.java@Overridepublic boolean onTouch(View v, MotionEvent event) {    swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;    if (swipeBack && !currentTaskon) {        currentTaskon = true;        if (buttonWidth < dX){            call(viewHolder);            activateVibrator();            recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX(buttonWidth);        }        else if (-buttonWidth > dX){            message(viewHolder);            activateVibrator();            recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX(-buttonWidth);        }        currentTaskon = false;    }    return false;}
+        //SwipeController.java
+	@Overridepublic boolean onTouch(View v, MotionEvent event) {
+		swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
+		if (swipeBack && !currentTaskon) {
+			currentTaskon = true;
+			if (buttonWidth < dX){
+				call(viewHolder);
+				activateVibrator();
+				recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX(buttonWidth);
+			}        
+			else if (-buttonWidth > dX){
+				message(viewHolder);
+				activateVibrator();
+				recyclerView.getChildAt(viewHolder.getAdapterPosition()).setX(-buttonWidth);
+			}
+			currentTaskon = false;
+		}
+	return false;}
         ```
         
 
