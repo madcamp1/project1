@@ -77,7 +77,7 @@ dependencies {
 
 
 - 연락처 정보는 ContentsPrvider에서 제공하는 ContactsContract 데이터베이스를 이용했습니다.
-- ContactsContract DB의 각 테이블에서 어플리케이션 상의 연락처에 보여줄 정보들을 ContactsData 객체의 필드에 할당하고, 이를 ContactsAdapter상에서 ArrayList로 관리 및 사용했습니다.
+- ContactsContract DB의 CommonDataKinds.Phone테이블에서 어플리케이션 상의 연락처에 보여줄 정보들을 ContactsData 객체의 필드에 할당하고, 이를 ContactsAdapter상에서 ArrayList로 관리 및 사용했습니다.
     
     ```
     //ContactData.java
