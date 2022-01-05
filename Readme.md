@@ -138,7 +138,7 @@ dependencies {
 - Contact Fragment — Listener
     1. 상단의 검색창 텍스트 변경 시 retrieve함수를 호출하여 실시간으로 검색 및 출력합니다.
         
-        ```
+    ```
         //Contact.java
 	public void afterTextChanged(Editable editable) {
 		recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_contacts);
@@ -146,23 +146,23 @@ dependencies {
 		assert contactAdapter != null;
 		contactAdapter.retrieveContact(editable.toString());
 	}
-        ```
+    ```
         
     2. 하단의 추가 버튼 클릭 시 연락처 추가 Activity로 이동합니다.
         
-        ```
+    ```
         //Contact.java
 	    public void onClick(View view) {
 		Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
 		intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
 		requireContext().startActivity(intent);
 	    }
-        ```
+    ```
         
 - Recyclerview — Listener
     1. ItemView를 길게 클릭 시 연락처 수정 및 삭제에 대한 Dialog 호출합니다. 선택에 따라 해당하는 동작 수행합니다.
         
-        ```
+  ```
         //ContactAdapter.java
 	@Override
 	public boolean onLongClick(View view) {
@@ -183,11 +183,11 @@ dependencies {
 		builder.show();
 		return true;
 	}
-        ```
+   ```
         
     2. Swipe event의 경우 SwipeController 클래스를 추가적으로 구현한 뒤 Recyclerview에 붙여서 처리했습니다. SwipeController 는 ItemtouchHelper.Callback 클래스를 상속한 클래스이며 swipe관련 method를 오버라이딩하여 사용하는 Class입니다.
         
-        ```
+   ```
         //SwipeController.java
 	@Override    
 	public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
@@ -200,11 +200,11 @@ dependencies {
 		}        
 		super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
 	}
-        ```
+    ```
         
         Swipe event를 통한 변위에 따라 메시지, 통화에 대한 안내문이 출력됩니다. 손가락을 뗐을 때에는 진동과 함께 통화 혹은 메시지에 대한 activity를 호출합니다.
         
-        ```
+    ```
         //SwipeController.java
 	@Overridepublic boolean onTouch(View v, MotionEvent event) {
 		swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
@@ -223,7 +223,7 @@ dependencies {
 			currentTaskon = false;
 		}
 	return false;}
-        ```
+    ```
         
 
 ---
