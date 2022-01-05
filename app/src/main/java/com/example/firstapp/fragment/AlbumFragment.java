@@ -81,13 +81,13 @@ public class AlbumFragment extends Fragment {
                 imageAdapter.setImageUris(imageUris);
                 int images = imageUris.size();
 
-                if (images == 0) {
-                    Intent intent = new Intent("delete-album");
-                    intent.putExtra("album-name", albumName);
-                    intent.putExtra("album-path", albumPath);
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    return;
-                }
+//                if (images == 0) {
+//                    Intent intent = new Intent("delete-album");
+//                    intent.putExtra("album-name", albumName);
+//                    intent.putExtra("album-path", albumPath);
+//                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+//                    return;
+//                }
                 int spanCount = 1;
                 if(images > 7) spanCount = 2;
                 if (images > 11) spanCount = 3;

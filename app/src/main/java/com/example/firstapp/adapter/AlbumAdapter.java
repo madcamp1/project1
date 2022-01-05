@@ -79,11 +79,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
     }
 
-    // Method that could us an unique id
-    public int getUniqueId(){
-        return (int) SystemClock.currentThreadTimeMillis();
-    }
-
     public void reloadAdapters() {
         albumFragments = new ArrayList<AlbumFragment>();
         for (int i = 0; i < albumUris.size(); i++) {
