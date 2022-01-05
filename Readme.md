@@ -80,11 +80,43 @@ dependencies {
 - ContactsContract DB의 각 테이블에서 어플리케이션 상의 연락처에 보여줄 정보들을 ContactsData 객체의 필드에 할당하고, 이를 ContactsAdapter상에서 ArrayList로 관리 및 사용했습니다.
     
     ```
-    //ContactData.javapublic class ContactData {    private long portraitSrc, contact_id;    private String name, phoneNum, description;    public ContactData(){};    public ContactData(long portraitSrc, String name, String phoneNum, String description, long contact_id) {        this.portraitSrc = portraitSrc;        this.name = name;        this.phoneNum = phoneNum;        this.description = description;        this.contact_id = contact_id;    }    //..Getter & Setter}
+    //ContactData.javapublic 
+    class ContactData {    
+    	private long portraitSrc, contact_id;
+	private String name, phoneNum, description;
+	public ContactData(){};
+	public ContactData(long portraitSrc, String name, String phoneNum, String description, long contact_id) {        this.portraitSrc = portraitSrc;        this.name = name;        this.phoneNum = phoneNum;        this.description = description;        this.contact_id = contact_id;    }
+	//..Getter & Setter}
     ```
     
     ```
-    //ContactAdapter.javapublic ArrayList<ContactData> getContactData(String input) {      Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI; //android provider 에서 제공하는 데이터 식별자      //ContactsContract.Contacts - Constants for the Contact table      // == 동일한 사람을 나타내는 연락처 집계당 하나의 레코드가 되는 연락처 테이블      //ContactsContract.CommonDataKinds = ContactsContract.Data 테이블의 common data type 을 정의      String[] qr = new String[]{"...queries"};      //..NullException            String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;      ArrayList<ContactData> result;            //Set Where Clause      String where = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + input + "%'" + " OR " + ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE '%" + input + "%'";      if (input.matches("[+-]?\\d*(\\.\\d+)?")) {                    //'-'없는 숫자 쿼리 핸들링          where += handleAdditionalQuery(input);      }      try (Cursor cursor = context.getContentResolver().query(uri, qr, where, null, sortOrder)) {          //SELECT qr FROM ContactsContract.CommonDataKinds.Phone DESC/ASC ~~ 같은 느낌이라 보면 될 듯          result = new ArrayList<ContactData>();          if (cursor.moveToFirst()) {              do {                  //...Set datas to ContactData object              } while (cursor.moveToNext());          }      } catch (Exception e) {          e.printStackTrace();          result = null;      }      return result;  }
+    //ContactAdapter.java
+    public ArrayList<ContactData> getContactData(String input) {
+    	Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI; //android provider 에서 제공하는 데이터 식별자      
+	//ContactsContract.Contacts - Constants for the Contact table
+	//ContactsContract.CommonDataKinds = ContactsContract.Data 테이블의 common data type 을 정의      
+	String[] qr = new String[]{"...queries"};      		
+	//..NullException            
+	String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME;      
+	ArrayList<ContactData> result;            
+	//Set Where Clause      
+	String where = ContactsContract.CommonDataKinds.Phone.NUMBER + " LIKE '%" + input + "%'" + " OR " +	ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE '%" + input + "%'";      
+	if (input.matches("[+-]?\\d*(\\.\\d+)?")) {                    
+	//'-'없는 숫자 쿼리 핸들링          
+	where += handleAdditionalQuery(input);      }      
+	try (Cursor cursor = context.getContentResolver().query(uri, qr, where, null, sortOrder)) {
+		//SELECT qr FROM ContactsContract.CommonDataKinds.Phone DESC/ASC ~~        
+		result = new ArrayList<ContactData>();          
+		if (cursor.moveToFirst()) {              
+			do {                  
+			//...Set datas to ContactData object              
+			} while (cursor.moveToNext());          
+		}      
+	} catch (Exception e) {          
+		e.printStackTrace();          
+		result = null;      }      
+	return result;
+	}
     ```
     
 - 내부 연락처에서 정보를 가져와 Adapter상의 ContactData list에 불러오는 과정은 JVM에 별도로 Thread를 할당한 뒤 결과값을 Handler로 받아오도록 구현했습니다.
