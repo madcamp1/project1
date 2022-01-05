@@ -3,7 +3,7 @@
     <string name="app_name">firstapp</string>
     <string name="tab_menu_1">contacts</string>
     <string name="tab_menu_2">gallery</string>
-    <string name="tab_menu_3">what</string>
+    <string name="tab_menu_3">map</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="contacts_fragment">Hello Contacts!</string>
     <string name="gallery_fragment">Hello Gallery!</string>
